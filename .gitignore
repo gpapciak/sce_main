@@ -1,0 +1,14 @@
+# OS / editor cruft — keep the hub repo clean.
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*~
+*.swp
+.idea/
+.vscode/
+
+# Node is only used for the optional manual catalog helper (tools/gen-catalog.js);
+# there are no installed deps in this repo, but ignore them if ever added.
+node_modules/
+npm-debug.log*

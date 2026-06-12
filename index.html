@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="index.title">Second Chance — Foundational courses</title>
+  <meta name="description" content="Short, anonymous, self-paced courses you can take on your phone. No account, no cost.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#1A486A">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div data-include="header"></div>
+
+  <main id="main" class="page">
+    <div class="container stack-lg">
+
+      <!-- Coming-soon banner shown when a not-yet-live language is chosen -->
+      <section id="comingSoon" class="notice notice--tip" hidden>
+        <span class="notice__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>
+        </span>
+        <div class="notice__body">
+          <strong data-i18n="lang.comingTitle">This language is coming soon</strong>
+          <p data-i18n="lang.comingBody">We're still preparing the courses in this language. For now you can continue in English.</p>
+          <p><button type="button" class="btn btn--secondary" id="continueEn" data-i18n="lang.continueEn">Continue in English</button></p>
+        </div>
+      </section>
+
+      <!-- Welcome -->
+      <section class="hero">
+        <p class="eyebrow" data-i18n="index.eyebrow">Welcome</p>
+        <h1 data-i18n="index.heading">Learning that's yours, at your own pace</h1>
+        <p class="lead" data-i18n="index.lead">Short, friendly courses you can take on your phone.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary btn--lg" href="courses.html">
+            <span data-i18n="index.cta.courses">See the courses</span>
+            <svg class="arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn--secondary btn--lg" href="help/how-to.html" data-i18n="index.cta.how">How it works</a>
+        </div>
+      </section>
+
+      <!-- Language selection -->
+      <section class="stack" aria-labelledby="langHeading">
+        <div class="stack-sm">
+          <h2 id="langHeading" data-i18n="index.lang.heading">Choose your language</h2>
+          <p class="soft" data-i18n="index.lang.hint">English is available now. More languages are coming soon.</p>
+        </div>
+        <div class="lang-grid" id="langGrid" role="group" aria-labelledby="langHeading">
+          <!-- built from SCE_I18N.LANGS -->
+        </div>
+      </section>
+
+      <!-- Privacy line -->
+      <section class="privacy-line">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <p data-i18n="privacy.line">This is anonymous. We don't ask for your name or email.</p>
+      </section>
+
+      <!-- Quiet help links -->
+      <section class="stack-sm" aria-labelledby="helpHeading">
+        <h2 id="helpHeading" data-i18n="index.help.heading">New to online learning?</h2>
+        <p class="soft" data-i18n="index.help.lead">These short guides explain everything.</p>
+        <ul class="quiet-links">
+          <li><a href="help/how-to.html" data-i18n="nav.howto">How it works</a></li>
+          <li><a href="help/tips.html" data-i18n="nav.tips">Tips</a></li>
+          <li><a href="help/faq.html" data-i18n="nav.faq">FAQ</a></li>
+          <li><a href="help/contact.html" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    // Landing language selector + coming-soon glue. Native language names are
+    // proper nouns; all other copy comes from i18n.
+    (function () {
+      function build() {
+        var grid = document.getElementById("langGrid");
+        if (!grid || !window.SCE_I18N) return;
+        var chosen = SCE_I18N.chosenLang();
+        grid.innerHTML = "";
+        SCE_I18N.LANGS.forEach(function (l) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "lang-option";
+          if (l.code === chosen) btn.setAttribute("aria-current", "true");
+          btn.innerHTML =
+            '<span class="native" lang="' + l.code + '" dir="' + l.dir + '">' + l.native + "</span>" +
+            (l.live ? "" : '<span class="soon">' + SCE_I18N.t("lang.soon") + "</span>");
+          btn.addEventListener("click", function () {
+            SCE_I18N.setLang(l.code);
+            window.location.reload();
+          });
+          grid.appendChild(btn);
+        });
+
+        var cs = document.getElementById("comingSoon");
+        if (cs && !SCE_I18N.isLive()) cs.hidden = false;
+        var ce = document.getElementById("continueEn");
+        if (ce) ce.addEventListener("click", function () {
+          SCE_I18N.setLang("en");
+          window.location.reload();
+        });
+      }
+      if (window.SCE_I18N && SCE_I18N.ready) SCE_I18N.ready.then(build);
+      else document.addEventListener("DOMContentLoaded", function () { setTimeout(build, 60); });
+    })();
+  </script>
+</body>
+</html>

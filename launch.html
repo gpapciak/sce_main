@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="launch.title">Opening your module — Second Chance</title>
+  <meta name="description" content="Module launcher.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#1A486A">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Launcher-only styles (scoped to this page; shared stylesheet untouched). */
+
+    /* Slimmer site header on the launcher only, to give the lesson more room. */
+    .site-header__inner { padding-block: var(--space-2); }
+    .brand img { width: 140px; }
+
+    .scorm-stage { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    /* Toolbar above the frame; shown only once a real iframe is mounted. */
+    .scorm-toolbar {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: var(--space-3); flex-wrap: wrap;
+    }
+    .scorm-toolbar .btn { min-height: 42px; padding-block: var(--space-2); }
+    /* Hint shown only in fullscreen (the completion note below the frame is
+       not visible while the stage fills the screen). */
+    .scorm-hint {
+      font-size: var(--text-sm); color: var(--color-text-soft);
+      max-width: 24rem; text-align: end;
+    }
+    .scorm-hint.is-done { color: var(--color-blue); font-weight: 600; }
+
+    /* Default (non-fullscreen) frame: phone-first, most of the viewport tall
+       and responsive. dvh tracks mobile browser chrome; vh is the fallback. */
+    .scorm-frame {
+      position: relative;
+      width: 100%;
+      height: 88vh;
+      height: 88dvh;
+      min-height: 26rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .scorm-frame iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+    .scorm-placeholder {
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      padding: var(--space-5); text-align: center;
+    }
+
+    /* Native Fullscreen API: the stage is the fullscreen element. */
+    .scorm-stage:fullscreen,
+    .scorm-stage:-webkit-full-screen {
+      background: #fff; gap: 0; padding: var(--space-2);
+    }
+    .scorm-stage:fullscreen .scorm-frame,
+    .scorm-stage:-webkit-full-screen .scorm-frame {
+      flex: 1; height: auto; min-height: 0;
+      border: 0; border-radius: 0; box-shadow: none;
+    }
+
+    /* CSS fallback fullscreen (iOS Safari / restricted Fullscreen API):
+       fixed container filling the viewport. */
+    .scorm-stage.is-css-fs {
+      position: fixed; inset: 0; z-index: 1000;
+      gap: 0; padding: var(--space-2);
+      background: #fff;
+    }
+    .scorm-stage.is-css-fs .scorm-frame {
+      flex: 1; height: auto; min-height: 0;
+      border: 0; border-radius: 0; box-shadow: none;
+    }
+    body.scorm-fs-lock { overflow: hidden; }
+  </style>
+</head>
+<body>
+  <div data-include="header"></div>
+
+  <main id="main" class="page">
+    <div class="container stack">
+
+      <a class="back-link" id="backLink" href="courses.html">
+        <span class="chev" aria-hidden="true">‹</span> <span data-i18n="launch.back">Back to the course</span>
+      </a>
+
+      <div class="page-head stack-sm">
+        <h1 id="lessonHeading" data-i18n="launch.heading">Your module is loading</h1>
+        <p class="soft" data-i18n="launch.note">Keep this page open while you work through the module.</p>
+      </div>
+
+      <!-- Shown when the interface language's course media is in another
+           language (e.g. Hindi interface → English modules). Permanent note. -->
+      <div id="contentLangNote" class="notice" hidden>
+        <span class="notice__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        </span>
+        <div class="notice__body"><p data-i18n="launch.englishModules">The course modules are in English.</p></div>
+      </div>
+
+      <!-- Live status line for the SCORM session -->
+      <div id="launchStatus" class="notice notice--tip" hidden aria-live="polite">
+        <span class="notice__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>
+        </span>
+        <div class="notice__body"><p id="launchStatusText">…</p></div>
+      </div>
+
+      <!-- ===================================================================
+           SCORM WRAPPER MOUNT (Step 2 — implemented).
+
+           The wrapper (inline script below):
+             1. Instantiates scorm-again (MIT, vendored at
+                js/vendor/scorm-again.min.js) as the SCORM 1.2 LMS object and
+                exposes it as `window.API` BEFORE the lesson iframe loads
+                (SCORM 2004 packages get `window.API_1484_11` instead).
+             2. Reads the lesson package's imsmanifest.xml to find the REAL
+                launch file (never assumes index.html) and the SCORM version.
+             3. Resolves the package repo as sce_courses_{contentLang}{group}
+                (catalog.repoPattern + course.repoGroup + catalog.contentLang),
+                then + lesson.path — a SIBLING repo on the SAME origin. Hindi
+                resolves to the English repos (contentLang.hi = "en"). Same-origin
+                is REQUIRED for the handshake (and enforced below).
+             4. Loads that launch file into the <iframe>.
+             5. On cmi.core.lesson_status === 'completed' | 'passed' (SCORM 1.2)
+                — or cmi.completion_status/success_status (2004) — calls
+                SCE_PROGRESS.setLessonStatus(course, lesson, 'completed') and
+                console.logs it.
+             6. (Later) cmi.suspend_data / cmi.core.lesson_location resume is
+                intentionally NOT built yet — add only if real content emits it.
+
+           Media is loaded lazily: nothing here fetches lesson media until a
+           lesson with a real package `path` is actually opened.
+           =================================================================== -->
+      <div id="scormStage" class="scorm-stage">
+        <!-- Fullscreen toggle. User-triggered only (no auto-enter). Real
+             focusable button; aria-label + aria-pressed kept in sync; Esc
+             exits. Revealed once a real iframe is mounted. -->
+        <div class="scorm-toolbar" id="scormToolbar" hidden>
+          <span class="scorm-hint" id="fsHint" hidden data-i18n="launch.fullscreenHint">Exit fullscreen when you reach the last slide to continue.</span>
+          <button type="button" id="fsToggle" class="btn btn--secondary" aria-pressed="false"
+                  data-i18n-attr="aria-label:launch.fullscreen">
+            <svg id="fsIconEnter" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            <svg id="fsIconExit" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M8 3v3a2 2 0 0 1-2 2H3M16 3v3a2 2 0 0 0 2 2h3M21 16h-3a2 2 0 0 0-2 2v3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+            <span id="fsLabel" data-i18n="launch.fullscreen">Fullscreen</span>
+          </button>
+        </div>
+
+        <div id="scormMount" class="scorm-frame">
+          <div id="scormPlaceholder" class="scorm-placeholder">
+            <div class="stack-sm">
+              <div class="tile__icon" style="margin-inline:auto; width:56px; height:56px;">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <p class="lead" id="placeholderText" data-i18n="launch.loading">Loading the module…</p>
+            </div>
+          </div>
+          <!-- lesson <iframe> is injected here once the manifest is resolved -->
+        </div>
+      </div>
+
+      <!-- Completion banner — revealed directly BELOW the lesson when it reports
+           completed/passed, so finishing the last slide flows straight into it.
+           (In fullscreen this is off-screen, so the toolbar hint guides the
+           learner to exit fullscreen — see #fsHint.) -->
+      <div id="completeBanner" class="card notice--tip" hidden style="border-color:var(--color-blue-100)" aria-live="polite">
+        <div class="stack-sm">
+          <div class="cert__seal" style="width:56px;height:56px;margin-inline-start:0">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h2 data-i18n="launch.completed.title">Module complete!</h2>
+          <p class="soft" data-i18n="launch.completed.body">Nicely done. Your progress has been saved on this device.</p>
+          <div class="btn-row">
+            <a class="btn btn--primary" id="completeToCourse" href="courses.html" data-i18n="launch.completed.toCourse">Back to the course</a>
+            <a class="btn btn--secondary" id="completeToCert" hidden href="complete.html" data-i18n="launch.completed.toCertificate">Get your certificate</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shared-device guidance shown near launch (§11) -->
+      <div class="notice notice--warm">
+        <span class="notice__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        </span>
+        <div class="notice__body">
+          <strong data-i18n="launch.shared.title">Sharing this device?</strong>
+          <p data-i18n="launch.shared.body">If you share this device with someone else taking Second Chance courses, only do that if each of you can finish a course in one sitting.</p>
+        </div>
+      </div>
+
+      <!-- Dev/testing controls (only with ?dev=1) — lets us exercise the
+           progress UI for lessons that don't have a real package yet. Hidden
+           from learners. -->
+      <div id="devControls" class="card" hidden>
+        <p class="muted" style="font-size:var(--text-sm)">Dev controls (testing only)</p>
+        <div class="btn-row" style="margin-block-start:var(--space-3)">
+          <button type="button" class="btn btn--secondary" id="devInProgress">Mark in progress</button>
+          <button type="button" class="btn btn--primary" id="devComplete">Mark completed</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <!-- scorm-again 3.0.5 (MIT) — vendored locally, same-origin, no CDN at runtime.
+       Loaded only on this page (lazy). Exposes window.Scorm12API / Scorm2004API. -->
+  <script src="js/vendor/scorm-again.min.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/courses.js"></script>
+  <script>
+  /* ========================================================================
+     SCORM launch wrapper (Step 2).
+     Reads the package manifest, hosts scorm-again as the LMS, loads the SCO
+     in an iframe, and writes completion through to the existing progress model.
+     ======================================================================== */
+  (function () {
+    "use strict";
+
+    function param(n) { try { return new URLSearchParams(location.search).get(n); } catch (e) { return null; } }
+    function t(k, f) { return window.SCE_I18N ? window.SCE_I18N.t(k, f) : (f || k); }
+
+    var courseId = param("course");
+    var lessonId = param("lesson");
+    var P = window.SCE_PROGRESS;
+    var completed = false;
+    var courseObj = null;
+    var inFullscreen = false;  // set by the fullscreen toggle
+    var lessonDone = false;    // set on completion
+
+    function showStatus(key) {
+      var box = document.getElementById("launchStatus");
+      var txt = document.getElementById("launchStatusText");
+      if (box && txt) { txt.textContent = t(key); box.hidden = false; }
+    }
+
+    // The fullscreen toolbar hint: visible only in fullscreen (where the
+    // completion banner below the frame can't be seen). Upgrades to a
+    // "complete — exit fullscreen" message once the lesson is done.
+    function updateFsHint() {
+      var hint = document.getElementById("fsHint");
+      if (!hint) return;
+      if (inFullscreen) {
+        hint.hidden = false;
+        hint.textContent = t(lessonDone ? "launch.fullscreenDoneHint" : "launch.fullscreenHint");
+        hint.classList.toggle("is-done", lessonDone);
+      } else {
+        hint.hidden = true;
+      }
+    }
+
+    function showInfo(titleKey, bodyKey) {
+      // Replace the mount with a friendly, non-error message (unavailable / error).
+      var mount = document.getElementById("scormMount");
+      if (!mount) return;
+      mount.innerHTML =
+        '<div class="text-center" style="min-height:46vh; display:grid; place-items:center; padding:var(--space-5)">' +
+          '<div class="stack-sm">' +
+            '<h2>' + t(titleKey) + '</h2>' +
+            '<p class="soft">' + t(bodyKey) + '</p>' +
+            '<p><a class="btn btn--secondary" id="infoBack" href="#">' + t("launch.completed.toCourse") + '</a></p>' +
+          '</div>' +
+        '</div>';
+      var ib = document.getElementById("infoBack");
+      if (ib) ib.href = courseId ? SCE_I18N.url("course.html") + "?course=" + encodeURIComponent(courseId) : SCE_I18N.url("courses.html");
+    }
+
+    function revealCompletion() {
+      var banner = document.getElementById("completeBanner");
+      if (banner) banner.hidden = false;
+      var toCourse = document.getElementById("completeToCourse");
+      if (toCourse && courseId) toCourse.href = SCE_I18N.url("course.html") + "?course=" + encodeURIComponent(courseId);
+      // If the whole course is now complete, offer the certificate.
+      if (courseObj && P) {
+        var ids = courseObj.lessons.map(function (l) { return l.id; });
+        if (P.isCourseComplete(courseObj.id, ids)) {
+          var cert = document.getElementById("completeToCert");
+          if (cert) { cert.hidden = false; cert.href = SCE_I18N.url("complete.html") + "?course=" + encodeURIComponent(courseObj.id); }
+        }
+      }
+      // Bring the banner into view reliably. The lesson may shift layout as it
+      // renders its final slide, so scroll on the next frame, move focus to the
+      // banner (also helps screen readers), and scroll again shortly after to
+      // catch any late shift. (No effect visually while in fullscreen — the
+      // toolbar hint covers that case.)
+      if (banner) {
+        banner.setAttribute("tabindex", "-1");
+        var bringIntoView = function () {
+          try { banner.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
+        };
+        requestAnimationFrame(function () {
+          bringIntoView();
+          try { banner.focus({ preventScroll: true }); } catch (e) {}
+        });
+        setTimeout(bringIntoView, 400);
+      }
+    }
+
+    // The single completion write-through to the progress model.
+    function markComplete() {
+      if (completed) return;
+      completed = true;
+      lessonDone = true;
+      if (P && courseId && lessonId) P.setLessonStatus(courseId, lessonId, "completed");
+      try { console.log("[lesson complete]", { course: courseId, lesson: lessonId }); } catch (e) {}
+      revealCompletion();
+      updateFsHint(); // if in fullscreen, surface the "exit to continue" hint
+    }
+
+    /* ---------------------------------------------------- manifest parsing */
+    function parseManifest(xmlText, manifestURL) {
+      var doc = new DOMParser().parseFromString(xmlText, "application/xml");
+      if (doc.getElementsByTagName("parsererror").length) throw new Error("manifest parse error");
+
+      function tag(name, ctx) { return (ctx || doc).getElementsByTagName(name); }
+
+      var svEl = tag("schemaversion")[0];
+      var version = svEl ? (svEl.textContent || "").trim() : "1.2";
+
+      // Default organization → first item with an identifierref.
+      var orgsEl = tag("organizations")[0];
+      var defId = orgsEl ? orgsEl.getAttribute("default") : null;
+      var orgList = tag("organization");
+      var org = null;
+      for (var i = 0; i < orgList.length; i++) {
+        if (defId && orgList[i].getAttribute("identifier") === defId) { org = orgList[i]; break; }
+      }
+      if (!org && orgList.length) org = orgList[0];
+
+      var ref = null;
+      if (org) {
+        var items = tag("item", org);
+        for (var j = 0; j < items.length; j++) {
+          var r = items[j].getAttribute("identifierref");
+          if (r) { ref = r; break; }
+        }
+      }
+
+      // Find the matching resource (fall back to first SCO/webcontent resource).
+      var resList = tag("resource");
+      var res = null;
+      for (var k = 0; k < resList.length; k++) {
+        if (ref && resList[k].getAttribute("identifier") === ref) { res = resList[k]; break; }
+      }
+      if (!res && resList.length) res = resList[0];
+      if (!res) throw new Error("no launchable resource in manifest");
+
+      // Honour xml:base on <resources> and <resource> if present.
+      var resourcesEl = tag("resources")[0];
+      var base = "";
+      if (resourcesEl && resourcesEl.getAttribute("xml:base")) base += resourcesEl.getAttribute("xml:base");
+      if (res.getAttribute("xml:base")) base += res.getAttribute("xml:base");
+      var href = res.getAttribute("href");
+      if (!href) throw new Error("resource has no href");
+
+      var launchURL = new URL(base + href, manifestURL).href;
+      return { version: version, launchURL: launchURL };
+    }
+
+    function is2004(version) {
+      return /2004|1\.3|cam\s*1\.3/i.test(version || "");
+    }
+
+    /* ----------------------------------------------- host scorm-again + iframe */
+    function hostAndLoad(info) {
+      var apiSettings = { autocommit: true, logLevel: 4 /* ERROR only */ };
+      var api;
+      if (is2004(info.version) && window.Scorm2004API) {
+        api = new window.Scorm2004API(apiSettings);
+        window.API_1484_11 = api; // SCORM 2004 global
+        api.on("Initialize", function () { showStatus("launch.started"); });
+        api.on("SetValue.cmi.completion_status", function (el, val) { if (val === "completed") markComplete(); });
+        api.on("SetValue.cmi.success_status", function (el, val) { if (val === "passed") markComplete(); });
+        api.on("Terminate", function () {
+          try { if (api.cmi.completion_status === "completed" || api.cmi.success_status === "passed") markComplete(); } catch (e) {}
+        });
+      } else {
+        api = new window.Scorm12API(apiSettings);
+        window.API = api; // SCORM 1.2 global — must exist BEFORE the iframe loads
+        api.on("LMSInitialize", function () { showStatus("launch.started"); });
+        api.on("LMSSetValue.cmi.core.lesson_status", function (el, val) {
+          if (val === "completed" || val === "passed") markComplete();
+        });
+        function checkFromCmi() {
+          try {
+            var v = api.cmi.core.lesson_status;
+            if (v === "completed" || v === "passed") markComplete();
+          } catch (e) {}
+        }
+        api.on("LMSCommit", checkFromCmi);
+        api.on("LMSFinish", checkFromCmi);
+      }
+
+      // Pass the test-only auto param through to the SCO if present.
+      var launchURL = info.launchURL;
+      if (param("auto") === "1") launchURL += (launchURL.indexOf("?") > -1 ? "&" : "?") + "auto=1";
+
+      var iframe = document.createElement("iframe");
+      iframe.title = document.getElementById("lessonHeading").textContent || "Module";
+      iframe.setAttribute("allow", "fullscreen; autoplay");
+      iframe.src = launchURL; // height/width come from the .scorm-frame container
+
+      var mount = document.getElementById("scormMount");
+      mount.innerHTML = "";
+      mount.appendChild(iframe);
+
+      // The fullscreen toggle is only meaningful once a real lesson is loaded.
+      var toolbar = document.getElementById("scormToolbar");
+      if (toolbar) toolbar.hidden = false;
+    }
+
+    // Fetch + parse a package manifest at manifestURL, then host it.
+    function loadManifestAndHost(manifestURL) {
+      // Enforce same-origin (required for the SCORM<->wrapper handshake).
+      if (new URL(manifestURL).origin !== location.origin) {
+        console.error("[scorm] refusing cross-origin package:", manifestURL);
+        showInfo("launch.error.title", "launch.error.body");
+        return;
+      }
+      fetch(manifestURL, { cache: "no-cache" })
+        .then(function (r) { if (!r.ok) throw new Error("manifest HTTP " + r.status); return r.text(); })
+        .then(function (xml) {
+          var info = parseManifest(xml, manifestURL);
+          console.log("[scorm] launching", { version: info.version, launch: info.launchURL });
+          hostAndLoad(info);
+        })
+        .catch(function (err) {
+          console.error("[scorm] could not load package:", err);
+          showInfo("launch.error.title", "launch.error.body");
+        });
+    }
+
+    // Resolve the lesson's package directory from the catalog and launch it.
+    // Repo = sce_courses_{contentLang}{repoGroup}, a SIBLING of sce_main on the
+    // SAME origin. contentLang maps the UI language to the language of the
+    // course MEDIA (Hindi -> English modules). Paths stay relative — no
+    // absolute "/..." and no hardcoded domain.
+    function launchPackage(catalog, course, lesson) {
+      var uiLang = SCE_I18N.chosenLang();
+      var contentLang = (catalog.contentLang && catalog.contentLang[uiLang]) || uiLang;
+      var group = course.repoGroup || 1;
+      var pattern = catalog.repoPattern || "../sce_courses_{lang}{group}";
+      var repoBase = pattern.replace("{lang}", contentLang).replace("{group}", String(group));
+
+      var inRepo = String(lesson.path).replace(/^\/+/, "").replace(/\/?$/, "/");
+      var pkgDir = repoBase.replace(/\/?$/, "/") + inRepo;            // ../sce_courses_en1/welcome/1_Welcome/
+      var pkgURL = new URL(pkgDir, SCE_I18N.ROOT).href;
+      var manifestURL = new URL("imsmanifest.xml", pkgURL).href;
+      loadManifestAndHost(manifestURL);
+    }
+
+    function wireDevControls() {
+      if (param("dev") !== "1") return;
+      var dc = document.getElementById("devControls");
+      if (dc) dc.hidden = false;
+      var ip = document.getElementById("devInProgress");
+      var cp = document.getElementById("devComplete");
+      var back = document.getElementById("backLink");
+      if (ip) ip.addEventListener("click", function () {
+        if (P && courseId && lessonId) P.setLessonStatus(courseId, lessonId, "in-progress");
+        back.click();
+      });
+      if (cp) cp.addEventListener("click", function () { markComplete(); });
+    }
+
+    /* ------------------------------------------------------ fullscreen toggle
+       User-triggered only (never auto-enter). Uses the native Fullscreen API
+       on the stage container, with a CSS fixed-position fallback for browsers
+       that restrict it (e.g. iOS Safari) so it still works on phones. The
+       toggle is a real focusable button with a synced aria-label/aria-pressed,
+       and Esc exits. */
+    function wireFullscreen() {
+      var stage = document.getElementById("scormStage");
+      var btn = document.getElementById("fsToggle");
+      var label = document.getElementById("fsLabel");
+      var iconEnter = document.getElementById("fsIconEnter");
+      var iconExit = document.getElementById("fsIconExit");
+      if (!stage || !btn) return;
+      var cssFs = false;
+
+      function nativeEl() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
+      function active() { return !!nativeEl() || cssFs; }
+
+      function updateBtn() {
+        var on = active();
+        var key = on ? "launch.exitFullscreen" : "launch.fullscreen";
+        if (label) label.textContent = t(key);
+        btn.setAttribute("aria-label", t(key));
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+        if (iconEnter) iconEnter.hidden = on;
+        if (iconExit) iconExit.hidden = !on;
+        inFullscreen = on;
+        updateFsHint();
+      }
+
+      function cssEnter() { cssFs = true; stage.classList.add("is-css-fs"); document.body.classList.add("scorm-fs-lock"); updateBtn(); }
+      function cssExit() { cssFs = false; stage.classList.remove("is-css-fs"); document.body.classList.remove("scorm-fs-lock"); updateBtn(); }
+
+      function enter() {
+        var req = stage.requestFullscreen || stage.webkitRequestFullscreen;
+        if (req) {
+          try {
+            var p = req.call(stage);
+            if (p && p.catch) p.catch(cssEnter); // permission/availability denied → fallback
+          } catch (e) { cssEnter(); }
+        } else {
+          cssEnter(); // Fullscreen API unavailable (e.g. iOS Safari)
+        }
+      }
+      function exit() {
+        if (nativeEl()) {
+          var ex = document.exitFullscreen || document.webkitExitFullscreen;
+          if (ex) { try { ex.call(document); } catch (e) {} }
+        }
+        if (cssFs) cssExit();
+      }
+
+      btn.addEventListener("click", function () { if (active()) exit(); else enter(); });
+
+      // Keep the button in sync if fullscreen changes outside the button
+      // (browser chrome, or Esc exiting native fullscreen).
+      document.addEventListener("fullscreenchange", updateBtn);
+      document.addEventListener("webkitfullscreenchange", updateBtn);
+      // Esc exits the CSS fallback (native Esc is handled by the browser itself).
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && cssFs) cssExit(); });
+
+      updateBtn();
+    }
+
+    function setup() {
+      var back = document.getElementById("backLink");
+      if (back && courseId) back.href = SCE_I18N.url("course.html") + "?course=" + encodeURIComponent(courseId);
+
+      // Opening a lesson reflects "in progress" until completion is reported.
+      if (P && courseId && lessonId) {
+        var cur = P.getLessonStatus(courseId, lessonId);
+        if (cur === "not-started") P.setLessonStatus(courseId, lessonId, "in-progress");
+      }
+      wireDevControls();
+      wireFullscreen();
+
+      // Diagnostic: ?fixture=1 loads the known-good SCORM 1.2 fixture in
+      // sce_main/_fixtures/ directly (it is intentionally NOT in the catalog).
+      if (param("fixture") === "1") {
+        document.getElementById("lessonHeading").textContent = "SCORM 1.2 diagnostic fixture";
+        loadManifestAndHost(SCE_I18N.url("_fixtures/scorm12-sample/imsmanifest.xml"));
+        return;
+      }
+
+      if (!window.SCE_COURSES) { setTimeout(setup, 40); return; }
+      SCE_COURSES.loadCatalog().then(function (catalog) {
+        var course = (catalog.courses || []).filter(function (c) { return c.id === courseId; })[0];
+        courseObj = course;
+        var lesson = course ? course.lessons.filter(function (l) { return l.id === lessonId; })[0] : null;
+        if (lesson) {
+          document.getElementById("lessonHeading").textContent = lesson.title || (lesson.titleKey ? SCE_I18N.t(lesson.titleKey) : lesson.id);
+        }
+
+        // If the UI language's course MEDIA is in a different language (Hindi
+        // -> English modules), show the permanent "modules are in English" note.
+        var uiLang = SCE_I18N.chosenLang();
+        var contentLang = (catalog.contentLang && catalog.contentLang[uiLang]) || uiLang;
+        if (uiLang !== contentLang) {
+          var note = document.getElementById("contentLangNote");
+          if (note) note.hidden = false;
+        }
+
+        if (!course || !lesson) { showInfo("course.notfound.title", "course.notfound.body"); return; }
+
+        if (!lesson.path) {
+          // No real package wired yet → friendly placeholder (not an error).
+          showInfo("launch.unavailable.title", "launch.unavailable.body");
+          return;
+        }
+        if (!window.Scorm12API && !window.Scorm2004API) {
+          console.error("[scorm] scorm-again failed to load");
+          showInfo("launch.error.title", "launch.error.body");
+          return;
+        }
+        launchPackage(catalog, course, lesson);
+      });
+    }
+
+    if (window.SCE_I18N && SCE_I18N.ready) SCE_I18N.ready.then(setup);
+    else document.addEventListener("DOMContentLoaded", setup);
+  })();
+  </script>
+</body>
+</html>

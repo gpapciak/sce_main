@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="contact.title">Contact — Second Chance</title>
+  <meta name="description" content="How to reach out, if you wish. Outbound only.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#1A486A">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div data-include="header"></div>
+
+  <main id="main" class="page">
+    <div class="container">
+      <a class="back-link" href="../index.html"><span class="chev" aria-hidden="true">‹</span> <span data-i18n="common.back">Back</span></a>
+
+      <div class="page-head stack-sm">
+        <h1 data-i18n="contact.heading">Getting in touch</h1>
+        <p class="lead" data-i18n="contact.lead">You don't need to contact anyone to use the courses.</p>
+      </div>
+
+      <div class="stack">
+        <div class="privacy-line">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+          <p data-i18n="contact.outbound">This site doesn't collect messages or your contact details.</p>
+        </div>
+
+        <!-- Per-country contact points. Outbound only — no inbound form.
+             Populate with real contacts later; structure stubbed now. -->
+        <div class="card stack-sm">
+          <h2 data-i18n="contact.byCountry">Contact points by country</h2>
+          <p class="soft" data-i18n="contact.tbd">Contact details for each country will be listed here soon.</p>
+          <ul class="lesson-list" id="contactList" hidden>
+            <!-- Example structure for later:
+            <li class="lesson">
+              <div class="lesson__body">
+                <div class="lesson__title">Country name</div>
+                <p class="soft" style="font-size:var(--text-sm)">Contact point / how to reach out</p>
+              </div>
+            </li>
+            -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <script src="../js/i18n.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/components.js"></script>
+</body>
+</html>

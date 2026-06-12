@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCORM 1.2 diagnostic fixture</title>
+  <!-- Self-contained SCORM 1.2 SCO. Discovers the host API by walking parent
+       frames and reports completion through the real data model. Used only to
+       verify the wrapper (launch.html?fixture=1). -->
+  <style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+           background:#FAF9F7; color:#1A1A1A; line-height:1.6;
+           display:flex; min-height:100vh; align-items:center; justify-content:center; padding:24px; }
+    .sco { max-width:34rem; width:100%; background:#fff; border:1px solid #E7E2DA;
+           border-radius:18px; padding:28px; box-shadow:0 8px 24px rgba(26,72,106,.10); }
+    h1 { color:#1A486A; margin:0 0 8px; font-size:1.4rem; }
+    button { font:inherit; font-weight:600; cursor:pointer; min-height:48px; padding:12px 24px;
+             border:none; border-radius:999px; background:#C51A2D; color:#fff; font-size:1.05rem; }
+    button:hover { background:#AE1626; } button[disabled]{ opacity:.55; cursor:default; }
+    .status { margin-top:16px; font-size:.9rem; color:#6E6A63; }
+    .done { color:#1A486A; font-weight:700; }
+  </style>
+</head>
+<body>
+  <main class="sco">
+    <h1>SCORM 1.2 diagnostic fixture</h1>
+    <p>This is a known-good SCORM 1.2 package used to verify the launcher's API handshake and completion write-through, independently of the real course content.</p>
+    <button id="finishBtn" type="button">Mark complete</button>
+    <p class="status" id="status">Connecting…</p>
+  </main>
+
+  <script>
+  (function () {
+    "use strict";
+    function findAPI(win) {
+      var tries = 0;
+      while (win && win.API == null && win.parent != null && win.parent !== win && tries < 12) { tries++; win = win.parent; }
+      return win ? win.API : null;
+    }
+    function getAPI() { var a = findAPI(window); if (!a && window.opener) a = findAPI(window.opener); return a; }
+
+    var statusEl = document.getElementById("status");
+    var btn = document.getElementById("finishBtn");
+    var API = getAPI();
+    var initialised = false;
+
+    function setStatus(m, done) { statusEl.textContent = m; statusEl.className = "status" + (done ? " done" : ""); }
+
+    if (!API) { setStatus("No SCORM host found (open via launch.html?fixture=1)."); btn.disabled = true; }
+    else {
+      var ok = API.LMSInitialize("");
+      initialised = (ok === "true" || ok === true);
+      if (initialised) {
+        if (API.LMSGetValue("cmi.core.lesson_status") === "not attempted") API.LMSSetValue("cmi.core.lesson_status", "incomplete");
+        API.LMSCommit("");
+        setStatus("Connected to SCORM host. Tap Mark complete.");
+      } else { setStatus("Could not start the SCORM session."); btn.disabled = true; }
+    }
+
+    function finish() {
+      if (!API || !initialised) return;
+      btn.disabled = true;
+      API.LMSSetValue("cmi.core.lesson_status", "completed");
+      API.LMSSetValue("cmi.core.session_time", "00:05:00");
+      API.LMSCommit("");
+      API.LMSFinish("");
+      setStatus("Completion sent to host — fixture OK.", true);
+    }
+    btn.addEventListener("click", finish);
+    try { if (new URLSearchParams(location.search).get("auto") === "1") setTimeout(finish, 600); } catch (e) {}
+  })();
+  </script>
+</body>
+</html>

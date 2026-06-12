@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="complete.title">Congratulations — Second Chance</title>
+  <meta name="description" content="Course complete. Make your certificate.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#1A486A">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div data-include="header"></div>
+
+  <main id="main" class="page">
+    <div class="container">
+
+      <!-- Not-complete state -->
+      <section id="notComplete" hidden class="card stack-sm">
+        <h1 data-i18n="complete.notComplete.title">Almost there</h1>
+        <p class="soft" data-i18n="complete.notComplete.body">Finish all the modules in this course to unlock your certificate.</p>
+        <p><a class="btn btn--primary" id="notCompleteBack" href="courses.html" data-i18n="complete.notComplete.cta">Back to the course</a></p>
+      </section>
+
+      <!-- Completed state -->
+      <section id="completeMain" hidden class="stack-lg">
+
+        <div class="celebrate">
+          <div class="celebrate__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h1 data-i18n="complete.heading">You did it!</h1>
+          <p class="lead" style="margin-inline:auto" data-i18n="complete.body">You've completed the course. That's a real achievement — well done.</p>
+        </div>
+
+        <!-- Country (only shown if not captured at intake) -->
+        <div class="card stack-sm" id="countryCard" hidden>
+          <label class="field__label" id="ccLabel" for="ccInput" data-i18n="complete.country.label">Which country are you in?</label>
+          <p class="field__hint" data-i18n="complete.country.hint">Optional, and anonymous.</p>
+          <div class="combo">
+            <input class="combo__input" id="ccInput" type="text" autocomplete="off"
+                   data-i18n-attr="placeholder:intake.q.country.placeholder; aria-label:complete.country.label">
+            <input type="hidden" data-country-value value="">
+            <ul class="combo__list" hidden></ul>
+          </div>
+        </div>
+
+        <!-- Certificate builder -->
+        <div class="card stack">
+          <div class="field">
+            <label class="field__label" for="nameInput" data-i18n="complete.name.label">Put your name on your certificate</label>
+            <p class="field__hint" data-i18n="complete.name.hint">This is only used to draw your certificate on this page. It is never saved or sent anywhere.</p>
+            <input class="text-input" id="nameInput" type="text" autocomplete="off"
+                   data-i18n-attr="placeholder:complete.name.placeholder; aria-label:complete.name.label">
+          </div>
+
+          <!-- Live certificate preview (client-side only; name stays in browser) -->
+          <figure class="cert" id="cert" aria-label="Certificate">
+            <div class="cert__seal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="M9 14l-1.5 7L12 18l4.5 3L15 14"/></svg>
+            </div>
+            <p class="cert__eyebrow" data-i18n="complete.cert.eyebrow">Certificate of completion</p>
+            <p class="muted" style="margin-block-start:var(--space-3)" data-i18n="complete.cert.awarded">Awarded to</p>
+            <p class="cert__name" id="certName" data-i18n="complete.cert.namePlaceholder">Your name</p>
+            <p class="muted" data-i18n="complete.cert.completed">for completing</p>
+            <p class="cert__course" id="certCourse">—</p>
+            <p class="cert__date" id="certDate">—</p>
+            <div class="cert__wordmark">
+              <img id="certLogo" src="assets/logo/SCE_logo_transparent_true.png" alt="Second Chance" width="150">
+            </div>
+          </figure>
+
+          <div class="btn-row">
+            <button type="button" class="btn btn--primary btn--lg" id="printBtn" data-i18n="complete.print">Save or print</button>
+            <a class="btn btn--ghost" href="courses.html" data-i18n="complete.backCourses">Back to courses</a>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/intake.js"></script>
+  <script src="js/courses.js"></script>
+  <script>
+    // Completion + certificate glue. The typed name is rendered in-browser
+    // only and is NEVER stored or transmitted. The anonymous completion
+    // metric (token + country + course + date) is recorded locally, with a
+    // Phase-2 Supabase hook inside SCE_PROGRESS.recordCompletion.
+    (function () {
+      function param(n) { try { return new URLSearchParams(location.search).get(n); } catch (e) { return null; } }
+      function safeGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+      var courseId = param("course");
+      var P = window.SCE_PROGRESS;
+
+      function fmtDate(iso) {
+        try {
+          var d = iso ? new Date(iso) : new Date();
+          var lang = SCE_I18N ? SCE_I18N.effectiveLang() : "en";
+          return d.toLocaleDateString(lang, { year: "numeric", month: "long", day: "numeric" });
+        } catch (e) { return ""; }
+      }
+
+      function run(catalog) {
+        var course = (catalog.courses || []).filter(function (c) { return c.id === courseId; })[0];
+        var notComplete = document.getElementById("notComplete");
+        var main = document.getElementById("completeMain");
+
+        var ids = course ? course.lessons.map(function (l) { return l.id; }) : [];
+        var complete = course && P ? P.isCourseComplete(course.id, ids) : false;
+
+        if (!course || !complete) {
+          if (notComplete) {
+            notComplete.hidden = false;
+            var back = document.getElementById("notCompleteBack");
+            if (back) back.href = course
+              ? SCE_I18N.url("course.html") + "?course=" + encodeURIComponent(course.id)
+              : SCE_I18N.url("courses.html");
+          }
+          return;
+        }
+
+        main.hidden = false;
+        document.title = SCE_I18N.t("complete.title") + " — Second Chance";
+
+        // Stamp + record the anonymous completion now.
+        var nowISO = new Date().toISOString();
+        var knownCountry = safeGet("sce_country");
+        P.recordCompletion(course.id, knownCountry || null, nowISO);
+        var completedAt = P.getCourseCompletedAt(course.id) || nowISO;
+
+        // Fill certificate static parts.
+        document.getElementById("certCourse").textContent = SCE_I18N.t(course.titleKey);
+        document.getElementById("certDate").textContent = fmtDate(completedAt);
+        document.getElementById("certLogo").src = SCE_I18N.url("assets/logo/SCE_logo_transparent_true.png");
+
+        // Live name binding (never stored).
+        var nameInput = document.getElementById("nameInput");
+        var certName = document.getElementById("certName");
+        var placeholder = SCE_I18N.t("complete.cert.namePlaceholder");
+        nameInput.addEventListener("input", function () {
+          var v = nameInput.value.trim();
+          certName.textContent = v || placeholder;
+          certName.style.opacity = v ? "1" : "0.55";
+        });
+        certName.style.opacity = "0.55";
+
+        // Country picker only if we don't already know it.
+        if (!knownCountry) {
+          var card = document.getElementById("countryCard");
+          card.hidden = false;
+          var combo = card.querySelector(".combo");
+          if (combo && window.SCE_FORMS) {
+            SCE_FORMS.mountCountryPicker(combo, {
+              onSelect: function (country) {
+                try { localStorage.setItem("sce_country", country); } catch (e) {}
+                P.recordCompletion(course.id, country, completedAt); // upserts country
+              }
+            });
+          }
+        }
+
+        document.getElementById("printBtn").addEventListener("click", function () { window.print(); });
+      }
+
+      function start() {
+        if (!window.SCE_COURSES) { setTimeout(start, 50); return; }
+        SCE_COURSES.loadCatalog().then(function (catalog) {
+          run(catalog);
+          if (window.SCE_I18N) SCE_I18N.apply(document);
+        });
+      }
+
+      if (window.SCE_I18N && SCE_I18N.ready) SCE_I18N.ready.then(start);
+      else document.addEventListener("DOMContentLoaded", start);
+    })();
+  </script>
+</body>
+</html>

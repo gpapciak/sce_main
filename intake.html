@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="intake.title">A few quick questions — Second Chance</title>
+  <meta name="description" content="A few optional, anonymous questions.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#1A486A">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div data-include="header"></div>
+
+  <main id="main" class="page">
+    <div class="container">
+
+      <div class="page-head stack-sm">
+        <h1 data-i18n="intake.heading">A few quick questions</h1>
+        <p class="lead" data-i18n="intake.intro">A few quick, optional questions — they're anonymous and help us improve the courses. You can skip them.</p>
+      </div>
+
+      <div class="privacy-line" style="margin-block-end:var(--space-6)">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <p data-i18n="privacy.line">This is anonymous.</p>
+      </div>
+
+      <form id="intakeForm" novalidate>
+
+        <!-- Q1: Country (searchable, picked value only) -->
+        <div class="field">
+          <label class="field__label" id="countryLabel" for="countryInput" data-i18n="intake.q.country">Which country are you in?</label>
+          <div class="combo">
+            <input class="combo__input" id="countryInput" type="text" autocomplete="off"
+                   data-i18n-attr="placeholder:intake.q.country.placeholder; aria-label:intake.q.country">
+            <input type="hidden" data-country-value value="">
+            <ul class="combo__list" hidden></ul>
+          </div>
+        </div>
+
+        <!-- Q2: Age range (single) -->
+        <div class="field">
+          <span class="field__label" id="ageLabel" data-i18n="intake.q.age">Your age range</span>
+          <div class="options" data-options data-single data-name="age" role="group" aria-labelledby="ageLabel">
+            <button class="option" data-value="u18"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.age.u18">Under 18</span></button>
+            <button class="option" data-value="18-24"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.age.18">18–24</span></button>
+            <button class="option" data-value="25-34"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.age.25">25–34</span></button>
+            <button class="option" data-value="35-44"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.age.35">35–44</span></button>
+            <button class="option" data-value="45-54"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.age.45">45–54</span></button>
+            <button class="option" data-value="55-64"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.age.55">55–64</span></button>
+            <button class="option" data-value="65+"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.age.65">65+</span></button>
+            <button class="option" data-value="na"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.age.na">Prefer not to say</span></button>
+          </div>
+        </div>
+
+        <!-- Q3: What brings you here (multi) -->
+        <div class="field">
+          <span class="field__label" id="bringsLabel" data-i18n="intake.q.brings">What brings you here?</span>
+          <p class="field__hint" data-i18n="intake.q.brings.hint">Choose all that apply</p>
+          <div class="options" data-options data-name="brings" role="group" aria-labelledby="bringsLabel">
+            <button class="option" data-value="confidence"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.brings.confidence">Building confidence &amp; personal growth</span></button>
+            <button class="option" data-value="gender"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.brings.gender">Understanding gender</span></button>
+            <button class="option" data-value="leadership"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.brings.leadership">Leadership</span></button>
+            <button class="option" data-value="digital"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.brings.digital">Digital skills</span></button>
+            <button class="option" data-value="business"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.brings.business">Starting or growing a business</span></button>
+            <button class="option" data-value="work"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.brings.work">Finding work</span></button>
+            <button class="option" data-value="education"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.brings.education">Returning to formal education</span></button>
+          </div>
+        </div>
+
+        <!-- Q4: How did you find these (single) -->
+        <div class="field">
+          <span class="field__label" id="foundLabel" data-i18n="intake.q.found">How did you find these courses?</span>
+          <div class="options" data-options data-single data-name="found" role="group" aria-labelledby="foundLabel">
+            <button class="option" data-value="hub"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.found.hub">Through a Second Chance hub or facilitator</span></button>
+            <button class="option" data-value="friend"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.found.friend">From a friend or family member</span></button>
+            <button class="option" data-value="online"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.found.online">Found it online</span></button>
+            <button class="option" data-value="other"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.found.other">Other</span></button>
+          </div>
+        </div>
+
+        <!-- Q5: Education (single, clearly optional) -->
+        <div class="field">
+          <span class="field__label" id="eduLabel">
+            <span data-i18n="intake.q.education">Highest level of education so far</span>
+            <span class="field__optional" data-i18n="common.optional">Optional</span>
+          </span>
+          <div class="options" data-options data-single data-name="education" role="group" aria-labelledby="eduLabel">
+            <button class="option" data-value="none"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.education.none">None / primary</span></button>
+            <button class="option" data-value="some"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.education.some">Some secondary</span></button>
+            <button class="option" data-value="completed"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.education.completed">Completed secondary</span></button>
+            <button class="option" data-value="beyond"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.education.beyond">Beyond secondary</span></button>
+            <button class="option" data-value="na"><span class="check" aria-hidden="true">✓</span><span data-i18n="intake.education.na">Prefer not to say</span></button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary btn--lg" data-i18n="intake.submit">Send answers</button>
+          <a href="courses.html" class="btn btn--ghost" id="intakeSkip" data-i18n="intake.skip">Skip for now</a>
+        </div>
+      </form>
+
+      <!-- Thank-you state -->
+      <section id="intakeThanks" hidden class="text-center stack">
+        <div class="celebrate">
+          <div class="cert__seal" style="width:72px;height:72px;margin-inline:auto">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h2 style="margin-block-start:var(--space-4)" data-i18n="intake.thanks.heading">Thank you</h2>
+          <p class="lead" style="margin-inline:auto" data-i18n="intake.thanks.body">That's all — thank you. Your answers are anonymous.</p>
+        </div>
+        <p><a class="btn btn--primary btn--lg" href="courses.html" data-i18n="intake.thanks.cta">Go to the courses</a></p>
+      </section>
+
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/intake.js"></script>
+</body>
+</html>

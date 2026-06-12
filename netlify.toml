@@ -1,0 +1,5 @@
+# Netlify config for a buildless static site.
+# There is no build step — Netlify just publishes the repo root as-is.
+[build]
+  command = ""
+  publish = "."
