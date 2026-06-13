@@ -235,6 +235,7 @@
     var P = window.SCE_PROGRESS;
     var completed = false;
     var courseObj = null;
+    var lessonList = [];   // per-language lessons for this course (catalog v3)
     var inFullscreen = false;  // set by the fullscreen toggle
     var lessonDone = false;    // set on completion
 
@@ -282,7 +283,7 @@
       if (toCourse && courseId) toCourse.href = SCE_I18N.url("course.html") + "?course=" + encodeURIComponent(courseId);
       // If the whole course is now complete, offer the certificate.
       if (courseObj && P) {
-        var ids = courseObj.lessons.map(function (l) { return l.id; });
+        var ids = lessonList.map(function (l) { return l.id; });
         if (P.isCourseComplete(courseObj.id, ids)) {
           var cert = document.getElementById("completeToCert");
           if (cert) { cert.hidden = false; cert.href = SCE_I18N.url("complete.html") + "?course=" + encodeURIComponent(courseObj.id); }
@@ -561,15 +562,19 @@
       SCE_COURSES.loadCatalog().then(function (catalog) {
         var course = (catalog.courses || []).filter(function (c) { return c.id === courseId; })[0];
         courseObj = course;
-        var lesson = course ? course.lessons.filter(function (l) { return l.id === lessonId; })[0] : null;
+
+        // Per-language lessons (catalog v3): pick the content language's list.
+        var uiLang = SCE_I18N.chosenLang();
+        var contentLang = (catalog.contentLang && catalog.contentLang[uiLang]) || uiLang;
+        lessonList = course ? (Array.isArray(course.lessons) ? course.lessons : (course.lessons[contentLang] || course.lessons.en || [])) : [];
+
+        var lesson = lessonList.filter(function (l) { return l.id === lessonId; })[0];
         if (lesson) {
           document.getElementById("lessonHeading").textContent = lesson.title || (lesson.titleKey ? SCE_I18N.t(lesson.titleKey) : lesson.id);
         }
 
         // If the UI language's course MEDIA is in a different language (Hindi
         // -> English modules), show the permanent "modules are in English" note.
-        var uiLang = SCE_I18N.chosenLang();
-        var contentLang = (catalog.contentLang && catalog.contentLang[uiLang]) || uiLang;
         if (uiLang !== contentLang) {
           var note = document.getElementById("contentLangNote");
           if (note) note.hidden = false;

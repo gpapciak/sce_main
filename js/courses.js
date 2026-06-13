@@ -54,19 +54,34 @@
 
   function courseState(course) {
     var P = window.SCE_PROGRESS;
-    var ids = course.lessons.map(function (l) { return l.id; });
-    var counts = P ? P.courseCounts(course.id, course.lessons.length) : { done: 0, total: course.lessons.length };
+    var lessons = lessonsOf(course);
+    var ids = lessons.map(function (l) { return l.id; });
+    var counts = P ? P.courseCounts(course.id, lessons.length) : { done: 0, total: lessons.length };
     var complete = P ? P.isCourseComplete(course.id, ids) : false;
-    var started = counts.done > 0 || course.lessons.some(function (l) {
+    var started = counts.done > 0 || lessons.some(function (l) {
       return P && P.getLessonStatus(course.id, l.id) === "in-progress";
     });
     return { counts: counts, complete: complete, started: started };
   }
 
+  var CATALOG = null;
   function loadCatalog() {
     return fetch(url("data/catalog.json"), { cache: "no-cache" })
       .then(function (r) { if (!r.ok) throw new Error("catalog " + r.status); return r.json(); })
+      .then(function (cat) { CATALOG = cat; return cat; })
       .catch(function () { return { courses: [] }; });
+  }
+  // content language = the language whose course MEDIA we load (Hindi -> en).
+  function contentLang() {
+    var ui = window.SCE_I18N ? SCE_I18N.chosenLang() : "en";
+    var map = CATALOG && CATALOG.contentLang;
+    return (map && map[ui]) || (window.SCE_I18N ? SCE_I18N.effectiveLang() : "en");
+  }
+  // Per-language lesson list (catalog v3: course.lessons is keyed by language).
+  function lessonsOf(course) {
+    var L = course.lessons || {};
+    if (Array.isArray(L)) return L;             // back-compat if ever an array
+    return L[contentLang()] || L.en || [];
   }
 
   /* ---------------------------------------------------------- courses index */
@@ -86,7 +101,7 @@
         '<a class="tile" href="' + url("course.html") + "?course=" + encodeURIComponent(course.id) + '">' +
           '<div class="tile__icon">' + icon(course.icon) + "</div>" +
           '<h3 class="tile__title">' + esc(t(course.titleKey)) + "</h3>" +
-          '<p class="tile__meta">' + esc(modulesLabel(course.lessons.length)) + "</p>" +
+          '<p class="tile__meta">' + esc(modulesLabel(lessonsOf(course).length)) + "</p>" +
           '<p class="soft" style="font-size:var(--text-sm)">' + esc(t(course.descKey)) + "</p>" +
           '<div class="progress-meter" style="margin-block-start:var(--space-3)">' +
             '<div class="progress-meter__label">' +
@@ -132,7 +147,7 @@
     var pct = st.counts.total ? Math.round((st.counts.done / st.counts.total) * 100) : 0;
     var P = window.SCE_PROGRESS;
 
-    var lessonsHTML = course.lessons.map(function (lesson, i) {
+    var lessonsHTML = lessonsOf(course).map(function (lesson, i) {
       var status = P ? P.getLessonStatus(course.id, lesson.id) : "not-started";
       var action = status === "completed" ? t("course.review")
         : status === "in-progress" ? t("course.continue") : t("course.start");

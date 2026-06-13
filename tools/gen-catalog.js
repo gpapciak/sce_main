@@ -1,70 +1,94 @@
-// One-shot catalog generator. Reads the real SCORM packages in the sibling
-// English course repos and emits data/catalog.json. Run from sce_main with the
-// repos as siblings of sce_main (i.e. cwd = sce_main, repos at ../sce_courses_*).
+#!/usr/bin/env node
+/*
+ * gen-catalog.js — build data/catalog.json from the real SCORM packages across
+ * ALL languages, and print an inventory table. Run from sce_main:
+ *     node tools/gen-catalog.js
+ *
+ * Each language is self-contained: lessons come from that language's own folders,
+ * ordered by their leading number (numeric), with the launch file derived from
+ * each lesson's own imsmanifest.xml (never assumes index.html). No cross-language
+ * mapping. Course folders are expected to share the English names.
+ */
 const fs = require("fs");
+const path = require("path");
+const ROOT = path.resolve(__dirname, "..", "..");           // parent of sce_main
 
-const ROOT = ".."; // parent dir containing sce_main + course repos
-
-// Course -> repo group + repo language source (English media), icon, i18n title keys.
-const COURSES = [
-  { id: "welcome",         repoGroup: 1, icon: "welcome",    titleKey: "course.welcome.title",         descKey: "course.welcome.desc" },
-  { id: "personal-growth", repoGroup: 1, icon: "growth",     titleKey: "course.personal-growth.title", descKey: "course.personal-growth.desc" },
-  { id: "gender",          repoGroup: 2, icon: "gender",     titleKey: "course.gender.title",          descKey: "course.gender.desc" },
-  { id: "leadership",      repoGroup: 2, icon: "leadership", titleKey: "course.leadership.title",       descKey: "course.leadership.desc" },
+const LANGS = ["en", "es", "fr", "ar"];                     // hi uses en media (no hi repos)
+const COURSES = [                                            // course -> repo group + meta
+  { id: "welcome",         group: 1, icon: "welcome",    titleKey: "course.welcome.title",         descKey: "course.welcome.desc" },
+  { id: "personal-growth", group: 1, icon: "growth",     titleKey: "course.personal-growth.title", descKey: "course.personal-growth.desc" },
+  { id: "gender",          group: 2, icon: "gender",     titleKey: "course.gender.title",          descKey: "course.gender.desc" },
+  { id: "leadership",      group: 2, icon: "leadership", titleKey: "course.leadership.title",       descKey: "course.leadership.desc" },
 ];
 
-function repoDir(group) { return ROOT + "/sce_courses_en" + group; }
-
-function decode(s) {
-  return s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-          .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'")
-          .replace(/&#(\d+);/g, function (_, n) { return String.fromCharCode(+n); });
+function repoDir(lang, group) { return path.join(ROOT, "sce_courses_" + lang + group); }
+function numPrefix(n) { const m = n.match(/^(\d+)/); return m ? parseInt(m[1], 10) : 1e9; }
+function decode(s){return s.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(+n));}
+function manifestInfo(xml, fallback) {
+  let title = null, href = null, ver = null;
+  let m = xml.match(/<item[^>]*>[\s\S]*?<title>([^<]*)<\/title>/); if (m && m[1].trim()) title = decode(m[1].trim());
+  if (!title) { m = xml.match(/<organization[^>]*>\s*<title>([^<]*)<\/title>/); if (m && m[1].trim()) title = decode(m[1].trim()); }
+  if (!title) title = fallback.replace(/^\d+_/, "").replace(/_/g, " ");
+  m = xml.match(/<schemaversion>([^<]*)<\/schemaversion>/i); if (m) ver = m[1].trim();
+  let ref = null; const im = xml.match(/<item[^>]*identifierref="([^"]+)"/); if (im) ref = im[1];
+  if (ref) { const rx = new RegExp('<resource[^>]*identifier="' + ref.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + '"[^>]*href="([^"]+)"'); m = xml.match(rx); if (m) href = m[1]; }
+  if (!href) { m = xml.match(/<resource[^>]*href="([^"]+)"/); if (m) href = m[1]; }
+  return { title, href, ver };
 }
 
-function titleFromManifest(xml, fallbackName) {
-  var m = xml.match(/<item[^>]*>[\s\S]*?<title>([^<]*)<\/title>/);
-  if (m && m[1].trim()) return decode(m[1].trim());
-  var o = xml.match(/<organization[^>]*>\s*<title>([^<]*)<\/title>/);
-  if (o && o[1].trim()) return decode(o[1].trim());
-  // Last resort: prettify the folder name (strip numeric prefix, split camelCase).
-  return fallbackName.replace(/^\d+_/, "").replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2");
-}
+const catalog = { version: 3, _comment: "Catalog v3 — per-language lessons. Each course's `lessons` is keyed by content language; the launcher picks lessons[contentLang] (Hindi->en). repoPattern + course.group resolve sce_courses_{lang}{group} (sibling, same origin). Lesson `path` is the in-repo package dir; the launcher reads each package's imsmanifest.xml for the real launch file + SCORM version (never assumes index.html). Built by tools/gen-catalog.js — do not hand-edit lessons.", repoPattern: "../sce_courses_{lang}{group}", contentLang: { en: "en", hi: "en", es: "es", fr: "fr", ar: "ar" }, courses: [] };
 
-function numPrefix(name) { var m = name.match(/^(\d+)/); return m ? parseInt(m[1], 10) : 99999; }
-
-const out = {
-  version: 2,
-  _comment: "Catalog v2. Each course declares repoGroup (1 or 2); the launcher resolves its media repo as sce_courses_{contentLang}{group} (a SIBLING of sce_main, same origin). `contentLang` maps a UI language to the language its course MEDIA is in: Hindi (hi) uses the English modules (en). Lesson `title` is the authored title read from the package imsmanifest.xml; `path` is the in-repo path. The launcher reads each package's imsmanifest.xml for the real launch file + SCORM version (never assumes index.html).",
-  repoPattern: "../sce_courses_{lang}{group}",
-  contentLang: { en: "en", hi: "en", es: "es", fr: "fr", ar: "ar" },
-  courses: [],
-};
+const flags = [];
+const inventory = [];
 
 for (const c of COURSES) {
-  const dir = repoDir(c.repoGroup) + "/" + c.id;
-  const lessonDirs = fs.readdirSync(dir, { withFileTypes: true })
-    .filter(function (e) { return e.isDirectory() && e.name !== ".git"; })
-    .map(function (e) { return e.name; })
-    .sort(function (a, b) { return numPrefix(a) - numPrefix(b) || a.localeCompare(b); });
-
-  const lessons = lessonDirs.map(function (d) {
-    const mpath = dir + "/" + d + "/imsmanifest.xml";
-    let title;
-    try { title = titleFromManifest(fs.readFileSync(mpath, "utf8"), d); }
-    catch (e) { title = d.replace(/^\d+_/, ""); }
-    return { id: d, title: title, path: c.id + "/" + d };
-  });
-
-  out.courses.push({
-    id: c.id, slug: c.id, icon: c.icon, repoGroup: c.repoGroup,
-    titleKey: c.titleKey, descKey: c.descKey, lessons: lessons,
-  });
+  const courseEntry = { id: c.id, slug: c.id, icon: c.icon, repoGroup: c.group, titleKey: c.titleKey, descKey: c.descKey, lessons: {} };
+  for (const lang of LANGS) {
+    const dir = path.join(repoDir(lang, c.group), c.id);
+    const repoName = "sce_courses_" + lang + c.group;
+    if (!fs.existsSync(dir)) { flags.push(`MISSING course folder: ${repoName}/${c.id}`); courseEntry.lessons[lang] = []; inventory.push({ lang, repo: repoName, course: c.id, count: 0, lessons: [], note: "FOLDER MISSING" }); continue; }
+    let dirs = fs.readdirSync(dir, { withFileTypes: true }).filter(e => e.isDirectory() && e.name !== ".git").map(e => e.name);
+    dirs.sort((a, b) => numPrefix(a) - numPrefix(b) || a.localeCompare(b));
+    const lessons = [], rows = [];
+    for (const d of dirs) {
+      const mp = path.join(dir, d, "imsmanifest.xml");
+      let info = { title: d, href: null, ver: null }, bad = null;
+      if (!fs.existsSync(mp)) bad = "no manifest";
+      else { try { info = manifestInfo(fs.readFileSync(mp, "utf8"), d); } catch (e) { bad = "manifest parse error"; } }
+      if (!info.href && !bad) bad = "no launch href in manifest";
+      if (bad) flags.push(`${repoName}/${c.id}/${d}: ${bad}`);
+      lessons.push({ id: d, title: info.title, path: c.id + "/" + d });
+      rows.push({ id: d, launch: info.href || "(?)", ver: info.ver || "?" });
+    }
+    courseEntry.lessons[lang] = lessons;
+    inventory.push({ lang, repo: repoName, course: c.id, count: lessons.length, lessons: rows });
+  }
+  catalog.courses.push(courseEntry);
 }
 
-fs.writeFileSync("data/catalog.json", JSON.stringify(out, null, 2) + "\n");
-console.log("Wrote data/catalog.json");
-out.courses.forEach(function (c) { console.log("  " + c.id + " (repo en" + c.repoGroup + "): " + c.lessons.length + " lessons"); });
-console.log("\nSample titles:");
-out.courses.forEach(function (c) {
-  console.log("  [" + c.id + "] " + c.lessons.slice(0, 3).map(function (l) { return l.id + ' => "' + l.title + '"'; }).join(" | "));
-});
+for (const c of COURSES) {
+  const counts = LANGS.map(l => (catalog.courses.find(x => x.id === c.id).lessons[l] || []).length);
+  LANGS.forEach((l, i) => { if (counts[i] === 0 && Math.max(...counts) > 0) flags.push(`${c.id}: ${l} has 0 lessons (others: ${counts.join("/")})`); });
+}
+
+fs.writeFileSync(path.join(__dirname, "..", "data", "catalog.json"), JSON.stringify(catalog, null, 2) + "\n");
+
+console.log("INVENTORY (language · repo/course · count · SCORM · launch files · lessons in numeric order)\n");
+let curLang = null;
+for (const r of inventory) {
+  if (r.lang !== curLang) { curLang = r.lang; console.log("\n========== " + r.lang.toUpperCase() + " =========="); }
+  if (r.note === "FOLDER MISSING") { console.log(`  ${r.repo}/${r.course}: !! FOLDER MISSING`); continue; }
+  const launches = [...new Set(r.lessons.map(x => x.launch))];
+  const launchSummary = launches.length === 1 ? `launch=${launches[0]} (all)` : `launch VARIES: ${r.lessons.map(x => x.id + "->" + x.launch).join(", ")}`;
+  const vers = [...new Set(r.lessons.map(x => x.ver))];
+  console.log(`  ${r.repo}/${r.course}: ${r.count} lessons | SCORM ${vers.join(",")} | ${launchSummary}`);
+  console.log(`      order: ${r.lessons.map(x => x.id).join(", ")}`);
+}
+console.log("\nCROSS-LANGUAGE COUNTS (differences are expected):");
+for (const c of COURSES) {
+  const cc = catalog.courses.find(x => x.id === c.id);
+  console.log("  " + c.id.padEnd(16) + LANGS.map(l => l + ":" + (cc.lessons[l] || []).length).join("  "));
+}
+console.log("\nFLAGS (" + flags.length + "):");
+flags.forEach(f => console.log("  ⚠ " + f));
+if (!flags.length) console.log("  none");

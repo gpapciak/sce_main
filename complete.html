@@ -117,7 +117,11 @@
         var notComplete = document.getElementById("notComplete");
         var main = document.getElementById("completeMain");
 
-        var ids = course ? course.lessons.map(function (l) { return l.id; }) : [];
+        // Per-language lessons (catalog v3): pick the content language's list.
+        var uiLang = SCE_I18N.chosenLang();
+        var cl = (catalog.contentLang && catalog.contentLang[uiLang]) || uiLang;
+        var lessons = course ? (Array.isArray(course.lessons) ? course.lessons : (course.lessons[cl] || course.lessons.en || [])) : [];
+        var ids = lessons.map(function (l) { return l.id; });
         var complete = course && P ? P.isCourseComplete(course.id, ids) : false;
 
         if (!course || !complete) {

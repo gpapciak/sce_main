@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "_comment": "Catalog v2. Each course declares repoGroup (1 or 2); the launcher resolves its media repo as sce_courses_{contentLang}{group} (a SIBLING of sce_main, same origin). `contentLang` maps a UI language to the language its course MEDIA is in: Hindi (hi) uses the English modules (en). Lesson `title` is the authored title read from the package imsmanifest.xml; `path` is the in-repo path. The launcher reads each package's imsmanifest.xml for the real launch file + SCORM version (never assumes index.html).",
+  "version": 3,
+  "_comment": "Catalog v3 — per-language lessons. Each course's `lessons` is keyed by content language; the launcher picks lessons[contentLang] (Hindi->en). repoPattern + course.group resolve sce_courses_{lang}{group} (sibling, same origin). Lesson `path` is the in-repo package dir; the launcher reads each package's imsmanifest.xml for the real launch file + SCORM version (never assumes index.html). Built by tools/gen-catalog.js — do not hand-edit lessons.",
   "repoPattern": "../sce_courses_{lang}{group}",
   "contentLang": {
     "en": "en",
@@ -17,33 +17,116 @@
       "repoGroup": 1,
       "titleKey": "course.welcome.title",
       "descKey": "course.welcome.desc",
-      "lessons": [
-        {
-          "id": "1_Welcome",
-          "title": "Welcome!",
-          "path": "welcome/1_Welcome"
-        },
-        {
-          "id": "2_UsingEdApp",
-          "title": "Using EdApp",
-          "path": "welcome/2_UsingEdApp"
-        },
-        {
-          "id": "3_Videos",
-          "title": "Videos",
-          "path": "welcome/3_Videos"
-        },
-        {
-          "id": "4_Findingyourwayaround",
-          "title": "Finding your way around",
-          "path": "welcome/4_Findingyourwayaround"
-        },
-        {
-          "id": "5_TheSCEcourses",
-          "title": "The SCE courses",
-          "path": "welcome/5_TheSCEcourses"
-        }
-      ]
+      "lessons": {
+        "en": [
+          {
+            "id": "1_Welcome",
+            "title": "Welcome!",
+            "path": "welcome/1_Welcome"
+          },
+          {
+            "id": "2_UsingEdApp",
+            "title": "Using EdApp",
+            "path": "welcome/2_UsingEdApp"
+          },
+          {
+            "id": "3_Videos",
+            "title": "Videos",
+            "path": "welcome/3_Videos"
+          },
+          {
+            "id": "4_Findingyourwayaround",
+            "title": "Finding your way around",
+            "path": "welcome/4_Findingyourwayaround"
+          },
+          {
+            "id": "5_TheSCEcourses",
+            "title": "The SCE courses",
+            "path": "welcome/5_TheSCEcourses"
+          }
+        ],
+        "es": [
+          {
+            "id": "1_Bienvenida",
+            "title": "¡Bienvenida!",
+            "path": "welcome/1_Bienvenida"
+          },
+          {
+            "id": "2_UsandoEdApp",
+            "title": "Usando EdApp",
+            "path": "welcome/2_UsandoEdApp"
+          },
+          {
+            "id": "3_Vdeos",
+            "title": "Vídeos",
+            "path": "welcome/3_Vdeos"
+          },
+          {
+            "id": "4_Encontrartucamino",
+            "title": "Encontrar tu camino",
+            "path": "welcome/4_Encontrartucamino"
+          },
+          {
+            "id": "5_LoscursosSCE",
+            "title": "Los cursos SCE",
+            "path": "welcome/5_LoscursosSCE"
+          }
+        ],
+        "fr": [
+          {
+            "id": "1_Vidos",
+            "title": "Vidéos",
+            "path": "welcome/1_Vidos"
+          },
+          {
+            "id": "2_S_orienter",
+            "title": "S'orienter",
+            "path": "welcome/2_S_orienter"
+          },
+          {
+            "id": "3_LescoursdeSCE",
+            "title": "Les cours de SCE",
+            "path": "welcome/3_LescoursdeSCE"
+          },
+          {
+            "id": "4_Bienvenue",
+            "title": "Bienvenue !",
+            "path": "welcome/4_Bienvenue"
+          },
+          {
+            "id": "5_UtiliserEdApp",
+            "title": "Utiliser EdApp",
+            "path": "welcome/5_UtiliserEdApp"
+          }
+        ],
+        "ar": [
+          {
+            "id": "1_",
+            "title": "!مرحبًا",
+            "path": "welcome/1_"
+          },
+          {
+            "id": "2_-",
+            "title": "استخدام إد-أب",
+            "path": "welcome/2_-"
+          },
+          {
+            "id": "3_",
+            "title": "فيديوهات",
+            "path": "welcome/3_"
+          },
+          {
+            "id": "4_",
+            "title": "التأقلم مع التطبيق",
+            "path": "welcome/4_"
+          },
+          {
+            "id": "5_",
+            "title": "دورات برنامج فرصة ثانية للتعليم",
+            "path": "welcome/5_"
+          }
+        ]
+      }
     },
     {
       "id": "personal-growth",
@@ -52,113 +135,426 @@
       "repoGroup": 1,
       "titleKey": "course.personal-growth.title",
       "descKey": "course.personal-growth.desc",
-      "lessons": [
-        {
-          "id": "1_Shareyourideas",
-          "title": "Share your ideas",
-          "path": "personal-growth/1_Shareyourideas"
-        },
-        {
-          "id": "2_Introduction",
-          "title": "Introduction",
-          "path": "personal-growth/2_Introduction"
-        },
-        {
-          "id": "3_SCEstories",
-          "title": "SCE stories",
-          "path": "personal-growth/3_SCEstories"
-        },
-        {
-          "id": "4_Drawingapictureofyourlifesofar",
-          "title": "Drawing a picture of your life so far",
-          "path": "personal-growth/4_Drawingapictureofyourlifesofar"
-        },
-        {
-          "id": "5_Whywecommunicate",
-          "title": "Why we communicate",
-          "path": "personal-growth/5_Whywecommunicate"
-        },
-        {
-          "id": "6_Bodylanguage",
-          "title": "Body language",
-          "path": "personal-growth/6_Bodylanguage"
-        },
-        {
-          "id": "7_Recognizingnegativeemotions",
-          "title": "Recognizing negative emotions",
-          "path": "personal-growth/7_Recognizingnegativeemotions"
-        },
-        {
-          "id": "8_Communicatingwell",
-          "title": "Communicating well",
-          "path": "personal-growth/8_Communicatingwell"
-        },
-        {
-          "id": "9_Motivation",
-          "title": "Motivation",
-          "path": "personal-growth/9_Motivation"
-        },
-        {
-          "id": "10_Agency",
-          "title": "Agency",
-          "path": "personal-growth/10_Agency"
-        },
-        {
-          "id": "11_Dealingwithchange",
-          "title": "Dealing with change",
-          "path": "personal-growth/11_Dealingwithchange"
-        },
-        {
-          "id": "12_Goalsetting",
-          "title": "Goal setting",
-          "path": "personal-growth/12_Goalsetting"
-        },
-        {
-          "id": "13_MeetAsta",
-          "title": "Meet Asta",
-          "path": "personal-growth/13_MeetAsta"
-        },
-        {
-          "id": "14_Astatimeandmotivation",
-          "title": "Asta, time and motivation",
-          "path": "personal-growth/14_Astatimeandmotivation"
-        },
-        {
-          "id": "15_Astadecidestoact",
-          "title": "Asta decides to act",
-          "path": "personal-growth/15_Astadecidestoact"
-        },
-        {
-          "id": "16_IntroductiontotheSCElearningpathways",
-          "title": "Introduction to the SCE learning pathways",
-          "path": "personal-growth/16_IntroductiontotheSCElearningpathways"
-        },
-        {
-          "id": "17_Quiz",
-          "title": "Quiz",
-          "path": "personal-growth/17_Quiz"
-        },
-        {
-          "id": "18_Acknowledgements",
-          "title": "Acknowledgements",
-          "path": "personal-growth/18_Acknowledgements"
-        },
-        {
-          "id": "19_Communicationdifficulties",
-          "title": "Communication difficulties",
-          "path": "personal-growth/19_Communicationdifficulties"
-        },
-        {
-          "id": "20_Managingyouremotions",
-          "title": "Managing your emotions",
-          "path": "personal-growth/20_Managingyouremotions"
-        },
-        {
-          "id": "21_Extraordinaryinteractions",
-          "title": "Extraordinary interactions",
-          "path": "personal-growth/21_Extraordinaryinteractions"
-        }
-      ]
+      "lessons": {
+        "en": [
+          {
+            "id": "1_Shareyourideas",
+            "title": "Share your ideas",
+            "path": "personal-growth/1_Shareyourideas"
+          },
+          {
+            "id": "2_Introduction",
+            "title": "Introduction",
+            "path": "personal-growth/2_Introduction"
+          },
+          {
+            "id": "3_SCEstories",
+            "title": "SCE stories",
+            "path": "personal-growth/3_SCEstories"
+          },
+          {
+            "id": "4_Drawingapictureofyourlifesofar",
+            "title": "Drawing a picture of your life so far",
+            "path": "personal-growth/4_Drawingapictureofyourlifesofar"
+          },
+          {
+            "id": "5_Whywecommunicate",
+            "title": "Why we communicate",
+            "path": "personal-growth/5_Whywecommunicate"
+          },
+          {
+            "id": "6_Bodylanguage",
+            "title": "Body language",
+            "path": "personal-growth/6_Bodylanguage"
+          },
+          {
+            "id": "7_Recognizingnegativeemotions",
+            "title": "Recognizing negative emotions",
+            "path": "personal-growth/7_Recognizingnegativeemotions"
+          },
+          {
+            "id": "8_Communicatingwell",
+            "title": "Communicating well",
+            "path": "personal-growth/8_Communicatingwell"
+          },
+          {
+            "id": "9_Motivation",
+            "title": "Motivation",
+            "path": "personal-growth/9_Motivation"
+          },
+          {
+            "id": "10_Agency",
+            "title": "Agency",
+            "path": "personal-growth/10_Agency"
+          },
+          {
+            "id": "11_Dealingwithchange",
+            "title": "Dealing with change",
+            "path": "personal-growth/11_Dealingwithchange"
+          },
+          {
+            "id": "12_Goalsetting",
+            "title": "Goal setting",
+            "path": "personal-growth/12_Goalsetting"
+          },
+          {
+            "id": "13_MeetAsta",
+            "title": "Meet Asta",
+            "path": "personal-growth/13_MeetAsta"
+          },
+          {
+            "id": "14_Astatimeandmotivation",
+            "title": "Asta, time and motivation",
+            "path": "personal-growth/14_Astatimeandmotivation"
+          },
+          {
+            "id": "15_Astadecidestoact",
+            "title": "Asta decides to act",
+            "path": "personal-growth/15_Astadecidestoact"
+          },
+          {
+            "id": "16_IntroductiontotheSCElearningpathways",
+            "title": "Introduction to the SCE learning pathways",
+            "path": "personal-growth/16_IntroductiontotheSCElearningpathways"
+          },
+          {
+            "id": "17_Quiz",
+            "title": "Quiz",
+            "path": "personal-growth/17_Quiz"
+          },
+          {
+            "id": "18_Acknowledgements",
+            "title": "Acknowledgements",
+            "path": "personal-growth/18_Acknowledgements"
+          },
+          {
+            "id": "19_Communicationdifficulties",
+            "title": "Communication difficulties",
+            "path": "personal-growth/19_Communicationdifficulties"
+          },
+          {
+            "id": "20_Managingyouremotions",
+            "title": "Managing your emotions",
+            "path": "personal-growth/20_Managingyouremotions"
+          },
+          {
+            "id": "21_Extraordinaryinteractions",
+            "title": "Extraordinary interactions",
+            "path": "personal-growth/21_Extraordinaryinteractions"
+          }
+        ],
+        "es": [
+          {
+            "id": "1_Reconociendoemocionesnegativas",
+            "title": "Reconociendo emociones negativas",
+            "path": "personal-growth/1_Reconociendoemocionesnegativas"
+          },
+          {
+            "id": "2_Comunicndonosbien",
+            "title": "Comunicándonos bien",
+            "path": "personal-growth/2_Comunicndonosbien"
+          },
+          {
+            "id": "3_Agradecimientos",
+            "title": "Agradecimientos",
+            "path": "personal-growth/3_Agradecimientos"
+          },
+          {
+            "id": "4_Interaccionesextraordinarias",
+            "title": "Interacciones extraordinarias",
+            "path": "personal-growth/4_Interaccionesextraordinarias"
+          },
+          {
+            "id": "5_Introduccin",
+            "title": "Introducción",
+            "path": "personal-growth/5_Introduccin"
+          },
+          {
+            "id": "6_HistoriasdeSCE",
+            "title": "Historias de SCE",
+            "path": "personal-growth/6_HistoriasdeSCE"
+          },
+          {
+            "id": "7_Haciendoundibujodetuvidahastaahora",
+            "title": "Haciendo un dibujo de tu vida hasta ahora",
+            "path": "personal-growth/7_Haciendoundibujodetuvidahastaahora"
+          },
+          {
+            "id": "8_Porqunoscomunicamos",
+            "title": "Por qué nos comunicamos",
+            "path": "personal-growth/8_Porqunoscomunicamos"
+          },
+          {
+            "id": "9_Lenguajecorporal",
+            "title": "Lenguaje corporal",
+            "path": "personal-growth/9_Lenguajecorporal"
+          },
+          {
+            "id": "10_Dificultadesdecomunicacin",
+            "title": "Dificultades de comunicación",
+            "path": "personal-growth/10_Dificultadesdecomunicacin"
+          },
+          {
+            "id": "11_Gestindetusemociones",
+            "title": "Gestión de tus emociones",
+            "path": "personal-growth/11_Gestindetusemociones"
+          },
+          {
+            "id": "12_Motivacin",
+            "title": "Motivación",
+            "path": "personal-growth/12_Motivacin"
+          },
+          {
+            "id": "13_Agencia",
+            "title": "Agencia",
+            "path": "personal-growth/13_Agencia"
+          },
+          {
+            "id": "14_Lidiarconelcambio",
+            "title": "Lidiar con el cambio",
+            "path": "personal-growth/14_Lidiarconelcambio"
+          },
+          {
+            "id": "15_Elestablecimientodemetas",
+            "title": "El establecimiento de metas",
+            "path": "personal-growth/15_Elestablecimientodemetas"
+          },
+          {
+            "id": "16_ConoceaJulia",
+            "title": "Conoce a Julia",
+            "path": "personal-growth/16_ConoceaJulia"
+          },
+          {
+            "id": "17_Juliatiempoymotivacin",
+            "title": "Julia, tiempo y motivación",
+            "path": "personal-growth/17_Juliatiempoymotivacin"
+          },
+          {
+            "id": "18_Juliadecideactuar",
+            "title": "Julia decide actuar",
+            "path": "personal-growth/18_Juliadecideactuar"
+          },
+          {
+            "id": "19_LasrutasdeaprendizajedeSCE",
+            "title": "Las rutas de aprendizaje de SCE",
+            "path": "personal-growth/19_LasrutasdeaprendizajedeSCE"
+          },
+          {
+            "id": "20_Pruebadelcurso",
+            "title": "Prueba del curso",
+            "path": "personal-growth/20_Pruebadelcurso"
+          }
+        ],
+        "fr": [
+          {
+            "id": "1_Partagezvosides",
+            "title": "Partagez vos idées",
+            "path": "personal-growth/1_Partagezvosides"
+          },
+          {
+            "id": "2_Motivation",
+            "title": "Motivation",
+            "path": "personal-growth/2_Motivation"
+          },
+          {
+            "id": "3_Difficultsdecommunication",
+            "title": "Difficultés de communication",
+            "path": "personal-growth/3_Difficultsdecommunication"
+          },
+          {
+            "id": "4_Dessineruntableaudevotreviejusqu_prsent",
+            "title": "Dessiner un tableau de votre vie jusqu'à présent",
+            "path": "personal-growth/4_Dessineruntableaudevotreviejusqu_prsent"
+          },
+          {
+            "id": "5_Introduction",
+            "title": "Introduction",
+            "path": "personal-growth/5_Introduction"
+          },
+          {
+            "id": "6_HistoiresSCE",
+            "title": "Histoires SCE",
+            "path": "personal-growth/6_HistoiresSCE"
+          },
+          {
+            "id": "7_Pourquoinouscommuniquons",
+            "title": "Pourquoi nous communiquons",
+            "path": "personal-growth/7_Pourquoinouscommuniquons"
+          },
+          {
+            "id": "8_Grervosmotions",
+            "title": "Gérer vos émotions",
+            "path": "personal-growth/8_Grervosmotions"
+          },
+          {
+            "id": "9_Lelangagecorporel",
+            "title": "Le langage corporel",
+            "path": "personal-growth/9_Lelangagecorporel"
+          },
+          {
+            "id": "10_Reconnatrelesmotionsngatives",
+            "title": "Reconnaître les émotions négatives",
+            "path": "personal-growth/10_Reconnatrelesmotionsngatives"
+          },
+          {
+            "id": "11_Biencommuniquer",
+            "title": "Bien communiquer",
+            "path": "personal-growth/11_Biencommuniquer"
+          },
+          {
+            "id": "12_Desinteractionsextraordinaires",
+            "title": "Des interactions extraordinaires",
+            "path": "personal-growth/12_Desinteractionsextraordinaires"
+          },
+          {
+            "id": "13_Lepouvoirdaction",
+            "title": "Le pouvoir d’action",
+            "path": "personal-growth/13_Lepouvoirdaction"
+          },
+          {
+            "id": "14_Fairefaceauchangement",
+            "title": "Faire face au changement",
+            "path": "personal-growth/14_Fairefaceauchangement"
+          },
+          {
+            "id": "15_Fixationd_objectifs",
+            "title": "Fixation d'objectifs",
+            "path": "personal-growth/15_Fixationd_objectifs"
+          },
+          {
+            "id": "16_RencontrezAnimatou",
+            "title": "Rencontrez Animatou",
+            "path": "personal-growth/16_RencontrezAnimatou"
+          },
+          {
+            "id": "17_Animatoutempsetmotivation",
+            "title": "Animatou, temps et motivation",
+            "path": "personal-growth/17_Animatoutempsetmotivation"
+          },
+          {
+            "id": "18_Animatoudcided_agir",
+            "title": "Animatou décide d'agir",
+            "path": "personal-growth/18_Animatoudcided_agir"
+          },
+          {
+            "id": "19_IntroductionauxparcoursdapprentissageSCE",
+            "title": "Introduction aux parcours d’apprentissage SCE",
+            "path": "personal-growth/19_IntroductionauxparcoursdapprentissageSCE"
+          },
+          {
+            "id": "20_Quizdecours",
+            "title": "Quiz de cours",
+            "path": "personal-growth/20_Quizdecours"
+          },
+          {
+            "id": "21_Remerciements",
+            "title": "Remerciements",
+            "path": "personal-growth/21_Remerciements"
+          }
+        ],
+        "ar": [
+          {
+            "id": "1_",
+            "title": "مقدمة",
+            "path": "personal-growth/1_"
+          },
+          {
+            "id": "2_",
+            "title": "قصص من فرصة ثانية للتعليم",
+            "path": "personal-growth/2_"
+          },
+          {
+            "id": "3_",
+            "title": "رسم صورة لحياتك حتى الآن",
+            "path": "personal-growth/3_"
+          },
+          {
+            "id": "4_",
+            "title": "لماذا نتواصل",
+            "path": "personal-growth/4_"
+          },
+          {
+            "id": "5_",
+            "title": "لغة الجسد",
+            "path": "personal-growth/5_"
+          },
+          {
+            "id": "6_",
+            "title": "صعوبات التواصل",
+            "path": "personal-growth/6_"
+          },
+          {
+            "id": "7_",
+            "title": "إدارة عواطفك",
+            "path": "personal-growth/7_"
+          },
+          {
+            "id": "8_",
+            "title": "التعرف على المشاعر السلبية",
+            "path": "personal-growth/8_"
+          },
+          {
+            "id": "9_",
+            "title": "التواصل بشكل جيد",
+            "path": "personal-growth/9_"
+          },
+          {
+            "id": "10_",
+            "title": "الوكالة",
+            "path": "personal-growth/10_"
+          },
+          {
+            "id": "11_",
+            "title": "التعامل مع التغيير",
+            "path": "personal-growth/11_"
+          },
+          {
+            "id": "12_",
+            "title": "تعرفي على أسما",
+            "path": "personal-growth/12_"
+          },
+          {
+            "id": "13_",
+            "title": "أسما والوقت والدافع",
+            "path": "personal-growth/13_"
+          },
+          {
+            "id": "14_",
+            "title": "مقدمة إلى مسارات التعلم في فرصة ثانية للتعليم",
+            "path": "personal-growth/14_"
+          },
+          {
+            "id": "15_",
+            "title": "اختبار",
+            "path": "personal-growth/15_"
+          },
+          {
+            "id": "16_",
+            "title": "شكر وتقدير",
+            "path": "personal-growth/16_"
+          },
+          {
+            "id": "17_",
+            "title": "الدافع",
+            "path": "personal-growth/17_"
+          },
+          {
+            "id": "18_",
+            "title": "تفاعلات غير عادية",
+            "path": "personal-growth/18_"
+          },
+          {
+            "id": "19_",
+            "title": "تحديد الأهداف",
+            "path": "personal-growth/19_"
+          },
+          {
+            "id": "20_",
+            "title": "أسما تقرر التصرف",
+            "path": "personal-growth/20_"
+          }
+        ]
+      }
     },
     {
       "id": "gender",
@@ -167,108 +563,406 @@
       "repoGroup": 2,
       "titleKey": "course.gender.title",
       "descKey": "course.gender.desc",
-      "lessons": [
-        {
-          "id": "1_Exploringgender",
-          "title": "Exploring gender",
-          "path": "gender/1_Exploringgender"
-        },
-        {
-          "id": "2_Whyitmatters",
-          "title": "Why it matters",
-          "path": "gender/2_Whyitmatters"
-        },
-        {
-          "id": "3_Rolesandstereotypes",
-          "title": "Roles and stereotypes",
-          "path": "gender/3_Rolesandstereotypes"
-        },
-        {
-          "id": "4_Dowomenbelongoutsidethehome",
-          "title": "Do women belong outside the home?",
-          "path": "gender/4_Dowomenbelongoutsidethehome"
-        },
-        {
-          "id": "5_Themessageswesend",
-          "title": "The messages we send",
-          "path": "gender/5_Themessageswesend"
-        },
-        {
-          "id": "6_Genderexpectations",
-          "title": "Gender expectations",
-          "path": "gender/6_Genderexpectations"
-        },
-        {
-          "id": "7_Pinkforgirls",
-          "title": "Pink for girls?",
-          "path": "gender/7_Pinkforgirls"
-        },
-        {
-          "id": "8_Internalizinggendernorms",
-          "title": "Internalizing gender norms",
-          "path": "gender/8_Internalizinggendernorms"
-        },
-        {
-          "id": "9_Violenceagainstwomen",
-          "title": "Violence against women",
-          "path": "gender/9_Violenceagainstwomen"
-        },
-        {
-          "id": "11_Goingtoschool",
-          "title": "Going to school",
-          "path": "gender/11_Goingtoschool"
-        },
-        {
-          "id": "12_Jobsforwomen",
-          "title": "Jobs for women",
-          "path": "gender/12_Jobsforwomen"
-        },
-        {
-          "id": "13_Workingandearning",
-          "title": "Working and earning",
-          "path": "gender/13_Workingandearning"
-        },
-        {
-          "id": "14_Women_semploymentexperiences",
-          "title": "Women's employment experiences",
-          "path": "gender/14_Women_semploymentexperiences"
-        },
-        {
-          "id": "15_Thestorysofar",
-          "title": "The story so far",
-          "path": "gender/15_Thestorysofar"
-        },
-        {
-          "id": "16_Astainthepublicsphere",
-          "title": "Asta in the public sphere",
-          "path": "gender/16_Astainthepublicsphere"
-        },
-        {
-          "id": "17_Thegirlscanplay",
-          "title": "The girls can play!",
-          "path": "gender/17_Thegirlscanplay"
-        },
-        {
-          "id": "18_Boysgirlstoysandschool",
-          "title": "Boys, girls, toys and school",
-          "path": "gender/18_Boysgirlstoysandschool"
-        },
-        {
-          "id": "19_Unequalopportunities",
-          "title": "Unequal opportunities",
-          "path": "gender/19_Unequalopportunities"
-        },
-        {
-          "id": "20_Quiz",
-          "title": "Quiz",
-          "path": "gender/20_Quiz"
-        },
-        {
-          "id": "21_Acknowledgements",
-          "title": "Acknowledgements",
-          "path": "gender/21_Acknowledgements"
-        }
-      ]
+      "lessons": {
+        "en": [
+          {
+            "id": "1_Exploringgender",
+            "title": "Exploring gender",
+            "path": "gender/1_Exploringgender"
+          },
+          {
+            "id": "2_Whyitmatters",
+            "title": "Why it matters",
+            "path": "gender/2_Whyitmatters"
+          },
+          {
+            "id": "3_Rolesandstereotypes",
+            "title": "Roles and stereotypes",
+            "path": "gender/3_Rolesandstereotypes"
+          },
+          {
+            "id": "4_Dowomenbelongoutsidethehome",
+            "title": "Do women belong outside the home?",
+            "path": "gender/4_Dowomenbelongoutsidethehome"
+          },
+          {
+            "id": "5_Themessageswesend",
+            "title": "The messages we send",
+            "path": "gender/5_Themessageswesend"
+          },
+          {
+            "id": "6_Genderexpectations",
+            "title": "Gender expectations",
+            "path": "gender/6_Genderexpectations"
+          },
+          {
+            "id": "7_Pinkforgirls",
+            "title": "Pink for girls?",
+            "path": "gender/7_Pinkforgirls"
+          },
+          {
+            "id": "8_Internalizinggendernorms",
+            "title": "Internalizing gender norms",
+            "path": "gender/8_Internalizinggendernorms"
+          },
+          {
+            "id": "9_Violenceagainstwomen",
+            "title": "Violence against women",
+            "path": "gender/9_Violenceagainstwomen"
+          },
+          {
+            "id": "11_Goingtoschool",
+            "title": "Going to school",
+            "path": "gender/11_Goingtoschool"
+          },
+          {
+            "id": "12_Jobsforwomen",
+            "title": "Jobs for women",
+            "path": "gender/12_Jobsforwomen"
+          },
+          {
+            "id": "13_Workingandearning",
+            "title": "Working and earning",
+            "path": "gender/13_Workingandearning"
+          },
+          {
+            "id": "14_Women_semploymentexperiences",
+            "title": "Women's employment experiences",
+            "path": "gender/14_Women_semploymentexperiences"
+          },
+          {
+            "id": "15_Thestorysofar",
+            "title": "The story so far",
+            "path": "gender/15_Thestorysofar"
+          },
+          {
+            "id": "16_Astainthepublicsphere",
+            "title": "Asta in the public sphere",
+            "path": "gender/16_Astainthepublicsphere"
+          },
+          {
+            "id": "17_Thegirlscanplay",
+            "title": "The girls can play!",
+            "path": "gender/17_Thegirlscanplay"
+          },
+          {
+            "id": "18_Boysgirlstoysandschool",
+            "title": "Boys, girls, toys and school",
+            "path": "gender/18_Boysgirlstoysandschool"
+          },
+          {
+            "id": "19_Unequalopportunities",
+            "title": "Unequal opportunities",
+            "path": "gender/19_Unequalopportunities"
+          },
+          {
+            "id": "20_Quiz",
+            "title": "Quiz",
+            "path": "gender/20_Quiz"
+          },
+          {
+            "id": "21_Acknowledgements",
+            "title": "Acknowledgements",
+            "path": "gender/21_Acknowledgements"
+          }
+        ],
+        "es": [
+          {
+            "id": "1_Rolesyestereotipos",
+            "title": "Roles y estereotipos",
+            "path": "gender/1_Rolesyestereotipos"
+          },
+          {
+            "id": "2_Lasmujerespertenecenfueradelhogar",
+            "title": "¿Las mujeres pertenecen fuera del hogar?",
+            "path": "gender/2_Lasmujerespertenecenfueradelhogar"
+          },
+          {
+            "id": "3_Losmensajesqueenviamos",
+            "title": "Los mensajes que enviamos",
+            "path": "gender/3_Losmensajesqueenviamos"
+          },
+          {
+            "id": "4_Expectativasdegnero",
+            "title": "Expectativas de género",
+            "path": "gender/4_Expectativasdegnero"
+          },
+          {
+            "id": "5_Agradecimientos",
+            "title": "Agradecimientos",
+            "path": "gender/5_Agradecimientos"
+          },
+          {
+            "id": "8_Rosaparanias",
+            "title": "¿Rosa para niñas?",
+            "path": "gender/8_Rosaparanias"
+          },
+          {
+            "id": "9_Iralaescuela",
+            "title": "Ir a la escuela",
+            "path": "gender/9_Iralaescuela"
+          },
+          {
+            "id": "10_Internalizandolasnormasdegnero",
+            "title": "Internalizando las normas de género",
+            "path": "gender/10_Internalizandolasnormasdegnero"
+          },
+          {
+            "id": "11_Laviolenciacontralasmujeres",
+            "title": "La violencia contra las mujeres",
+            "path": "gender/11_Laviolenciacontralasmujeres"
+          },
+          {
+            "id": "12_Empoderaramujeresynias",
+            "title": "Empoderar a mujeres y niñas",
+            "path": "gender/12_Empoderaramujeresynias"
+          },
+          {
+            "id": "13_Empleosparamujeres",
+            "title": "Empleos para mujeres",
+            "path": "gender/13_Empleosparamujeres"
+          },
+          {
+            "id": "14_Trabajaryganar",
+            "title": "Trabajar y ganar",
+            "path": "gender/14_Trabajaryganar"
+          },
+          {
+            "id": "15_Lasexperienciaslaboralesdelasmujeres",
+            "title": "Las experiencias laborales de las mujeres",
+            "path": "gender/15_Lasexperienciaslaboralesdelasmujeres"
+          },
+          {
+            "id": "16_Lahistoriahastaahora",
+            "title": "La historia hasta ahora",
+            "path": "gender/16_Lahistoriahastaahora"
+          },
+          {
+            "id": "17_Juliaenlaesferapblica",
+            "title": "Julia en la esfera pública",
+            "path": "gender/17_Juliaenlaesferapblica"
+          },
+          {
+            "id": "18_Lasniaspuedenjugar",
+            "title": "¡Las niñas pueden jugar!",
+            "path": "gender/18_Lasniaspuedenjugar"
+          },
+          {
+            "id": "19_Niosniasjuguetesyescuela",
+            "title": "Niños, niñas, juguetes y escuela.",
+            "path": "gender/19_Niosniasjuguetesyescuela"
+          },
+          {
+            "id": "20_Oportunidadesdesiguales",
+            "title": "Oportunidades desiguales",
+            "path": "gender/20_Oportunidadesdesiguales"
+          },
+          {
+            "id": "21_Pruebadelcurso",
+            "title": "Prueba del curso",
+            "path": "gender/21_Pruebadelcurso"
+          }
+        ],
+        "fr": [
+          {
+            "id": "1_Explorerlegenre",
+            "title": "Explorer le genre",
+            "path": "gender/1_Explorerlegenre"
+          },
+          {
+            "id": "2_Durosepourlesfilles",
+            "title": "Du rose pour les filles ?",
+            "path": "gender/2_Durosepourlesfilles"
+          },
+          {
+            "id": "3_Autonomisationdesfemmesetdesjeunesfilles",
+            "title": "Autonomisation des femmes et des jeunes filles",
+            "path": "gender/3_Autonomisationdesfemmesetdesjeunesfilles"
+          },
+          {
+            "id": "4_Allerl_cole",
+            "title": "Aller à l'école",
+            "path": "gender/4_Allerl_cole"
+          },
+          {
+            "id": "5_Desemploispourlesfemmes",
+            "title": "Des emplois pour les femmes",
+            "path": "gender/5_Desemploispourlesfemmes"
+          },
+          {
+            "id": "6_Travailleretgagnersavie",
+            "title": "Travailler et gagner sa vie",
+            "path": "gender/6_Travailleretgagnersavie"
+          },
+          {
+            "id": "7_L_histoirejusqu_ici",
+            "title": "L'histoire jusqu'ici",
+            "path": "gender/7_L_histoirejusqu_ici"
+          },
+          {
+            "id": "8_Remerciements",
+            "title": "Remerciements",
+            "path": "gender/8_Remerciements"
+          },
+          {
+            "id": "9_Pourquoicestimportant",
+            "title": "Pourquoi c’est important",
+            "path": "gender/9_Pourquoicestimportant"
+          },
+          {
+            "id": "11_Lesfemmesont-ellesleurplaceendehorsdelamaison",
+            "title": "Les femmes ont-elles leur place en dehors de la maison ?",
+            "path": "gender/11_Lesfemmesont-ellesleurplaceendehorsdelamaison"
+          },
+          {
+            "id": "12_Lesmessagesquenousenvoyons",
+            "title": "Les messages que nous envoyons",
+            "path": "gender/12_Lesmessagesquenousenvoyons"
+          },
+          {
+            "id": "13_Attentesenmatiredegenre",
+            "title": "Attentes en matière de genre",
+            "path": "gender/13_Attentesenmatiredegenre"
+          },
+          {
+            "id": "14_Intriorisationdesnormesdegenre",
+            "title": "Intériorisation des normes de genre",
+            "path": "gender/14_Intriorisationdesnormesdegenre"
+          },
+          {
+            "id": "15_Violencecontrelesfemmes",
+            "title": "Violence contre les femmes",
+            "path": "gender/15_Violencecontrelesfemmes"
+          },
+          {
+            "id": "16_Expriencesprofessionnellesdesfemmes",
+            "title": "Expériences professionnelles des femmes",
+            "path": "gender/16_Expriencesprofessionnellesdesfemmes"
+          },
+          {
+            "id": "17_Animatoudanslasphrepublique",
+            "title": "Animatou dans la sphère publique",
+            "path": "gender/17_Animatoudanslasphrepublique"
+          },
+          {
+            "id": "18_Lesfillespeuventjouer",
+            "title": "Les filles peuvent jouer !",
+            "path": "gender/18_Lesfillespeuventjouer"
+          },
+          {
+            "id": "19_Garonsfillesjouetsetcole",
+            "title": "Garçons, filles, jouets et école",
+            "path": "gender/19_Garonsfillesjouetsetcole"
+          },
+          {
+            "id": "20_Ingalitdeschances",
+            "title": "Inégalité des chances",
+            "path": "gender/20_Ingalitdeschances"
+          },
+          {
+            "id": "21_Quizdecours",
+            "title": "Quiz de cours",
+            "path": "gender/21_Quizdecours"
+          }
+        ],
+        "ar": [
+          {
+            "id": "1_",
+            "title": "ما أهميتها؟",
+            "path": "gender/1_"
+          },
+          {
+            "id": "2_",
+            "title": "الأدوار والصور النمطية",
+            "path": "gender/2_"
+          },
+          {
+            "id": "3_",
+            "title": "هل مكان المرأة خارج المنزل؟",
+            "path": "gender/3_"
+          },
+          {
+            "id": "4_",
+            "title": "الرسائل التي نرسلها",
+            "path": "gender/4_"
+          },
+          {
+            "id": "5_",
+            "title": "قبول المعايير الجنسانية",
+            "path": "gender/5_"
+          },
+          {
+            "id": "6_",
+            "title": "العنف ضد المرأة",
+            "path": "gender/6_"
+          },
+          {
+            "id": "9_",
+            "title": "العمل والكسب",
+            "path": "gender/9_"
+          },
+          {
+            "id": "10_",
+            "title": "القصة حتى الآن",
+            "path": "gender/10_"
+          },
+          {
+            "id": "11_",
+            "title": "أسما في المجال العام",
+            "path": "gender/11_"
+          },
+          {
+            "id": "12_",
+            "title": "يمكن للفتيات اللعب!",
+            "path": "gender/12_"
+          },
+          {
+            "id": "13_",
+            "title": "الفتيان والفتيات والألعاب والمدرسة",
+            "path": "gender/13_"
+          },
+          {
+            "id": "14_",
+            "title": "اختبار",
+            "path": "gender/14_"
+          },
+          {
+            "id": "15_",
+            "title": "شكر وتقدير",
+            "path": "gender/15_"
+          },
+          {
+            "id": "16_",
+            "title": "استكشاف الجنسانية",
+            "path": "gender/16_"
+          },
+          {
+            "id": "17_",
+            "title": "هل الزهر للبنات؟",
+            "path": "gender/17_"
+          },
+          {
+            "id": "18_",
+            "title": "تمكين النساء والفتيات",
+            "path": "gender/18_"
+          },
+          {
+            "id": "19_",
+            "title": "التوقعات بين الجنسين",
+            "path": "gender/19_"
+          },
+          {
+            "id": "20_",
+            "title": "تجارب توظيف المرأة",
+            "path": "gender/20_"
+          },
+          {
+            "id": "21_",
+            "title": "فرص غير متكافئة",
+            "path": "gender/21_"
+          }
+        ]
+      }
     },
     {
       "id": "leadership",
@@ -277,108 +971,416 @@
       "repoGroup": 2,
       "titleKey": "course.leadership.title",
       "descKey": "course.leadership.desc",
-      "lessons": [
-        {
-          "id": "1_Introduction",
-          "title": "Introduction",
-          "path": "leadership/1_Introduction"
-        },
-        {
-          "id": "2_Agentsofchange",
-          "title": "Agents of change",
-          "path": "leadership/2_Agentsofchange"
-        },
-        {
-          "id": "3_Beingaleader",
-          "title": "Being a leader",
-          "path": "leadership/3_Beingaleader"
-        },
-        {
-          "id": "4_Greatfeministleaders",
-          "title": "Great feminist leaders",
-          "path": "leadership/4_Greatfeministleaders"
-        },
-        {
-          "id": "5_Feministleadership",
-          "title": "Feminist leadership",
-          "path": "leadership/5_Feministleadership"
-        },
-        {
-          "id": "6_Thepowerofcaring",
-          "title": "The power of caring",
-          "path": "leadership/6_Thepowerofcaring"
-        },
-        {
-          "id": "7_Becomingafeministleader",
-          "title": "Becoming a feminist leader",
-          "path": "leadership/7_Becomingafeministleader"
-        },
-        {
-          "id": "8_Weneedaction",
-          "title": "We need action!",
-          "path": "leadership/8_Weneedaction"
-        },
-        {
-          "id": "9_Whatcangirlsdo",
-          "title": "\"What can girls do?\"",
-          "path": "leadership/9_Whatcangirlsdo"
-        },
-        {
-          "id": "10_Seekingjusticetogether",
-          "title": "Seeking justice together",
-          "path": "leadership/10_Seekingjusticetogether"
-        },
-        {
-          "id": "11_Benefitsofmentoring",
-          "title": "Benefits of mentoring",
-          "path": "leadership/11_Benefitsofmentoring"
-        },
-        {
-          "id": "12_Whatnottodoasamentor",
-          "title": "What not to do as a mentor",
-          "path": "leadership/12_Whatnottodoasamentor"
-        },
-        {
-          "id": "13_Astaandthecoach",
-          "title": "Asta and the coach",
-          "path": "leadership/13_Astaandthecoach"
-        },
-        {
-          "id": "14_Astaandherneighbour",
-          "title": "Asta and her neighbour",
-          "path": "leadership/14_Astaandherneighbour"
-        },
-        {
-          "id": "15_Quiz",
-          "title": "Quiz",
-          "path": "leadership/15_Quiz"
-        },
-        {
-          "id": "16_Acknowledgements",
-          "title": "Acknowledgements",
-          "path": "leadership/16_Acknowledgements"
-        },
-        {
-          "id": "17_Icanchangethings",
-          "title": "I can change things!",
-          "path": "leadership/17_Icanchangethings"
-        },
-        {
-          "id": "18_SCEagentsofchange",
-          "title": "SCE agents of change",
-          "path": "leadership/18_SCEagentsofchange"
-        },
-        {
-          "id": "19_Individualstogether",
-          "title": "Individuals together",
-          "path": "leadership/19_Individualstogether"
-        },
-        {
-          "id": "20_Astaandthecommunitygarden",
-          "title": "Asta and the community garden",
-          "path": "leadership/20_Astaandthecommunitygarden"
-        }
-      ]
+      "lessons": {
+        "en": [
+          {
+            "id": "1_Introduction",
+            "title": "Introduction",
+            "path": "leadership/1_Introduction"
+          },
+          {
+            "id": "2_Agentsofchange",
+            "title": "Agents of change",
+            "path": "leadership/2_Agentsofchange"
+          },
+          {
+            "id": "3_Beingaleader",
+            "title": "Being a leader",
+            "path": "leadership/3_Beingaleader"
+          },
+          {
+            "id": "4_Greatfeministleaders",
+            "title": "Great feminist leaders",
+            "path": "leadership/4_Greatfeministleaders"
+          },
+          {
+            "id": "5_Feministleadership",
+            "title": "Feminist leadership",
+            "path": "leadership/5_Feministleadership"
+          },
+          {
+            "id": "6_Thepowerofcaring",
+            "title": "The power of caring",
+            "path": "leadership/6_Thepowerofcaring"
+          },
+          {
+            "id": "7_Becomingafeministleader",
+            "title": "Becoming a feminist leader",
+            "path": "leadership/7_Becomingafeministleader"
+          },
+          {
+            "id": "8_Weneedaction",
+            "title": "We need action!",
+            "path": "leadership/8_Weneedaction"
+          },
+          {
+            "id": "9_Whatcangirlsdo",
+            "title": "\"What can girls do?\"",
+            "path": "leadership/9_Whatcangirlsdo"
+          },
+          {
+            "id": "10_Seekingjusticetogether",
+            "title": "Seeking justice together",
+            "path": "leadership/10_Seekingjusticetogether"
+          },
+          {
+            "id": "11_Benefitsofmentoring",
+            "title": "Benefits of mentoring",
+            "path": "leadership/11_Benefitsofmentoring"
+          },
+          {
+            "id": "12_Whatnottodoasamentor",
+            "title": "What not to do as a mentor",
+            "path": "leadership/12_Whatnottodoasamentor"
+          },
+          {
+            "id": "13_Astaandthecoach",
+            "title": "Asta and the coach",
+            "path": "leadership/13_Astaandthecoach"
+          },
+          {
+            "id": "14_Astaandherneighbour",
+            "title": "Asta and her neighbour",
+            "path": "leadership/14_Astaandherneighbour"
+          },
+          {
+            "id": "15_Quiz",
+            "title": "Quiz",
+            "path": "leadership/15_Quiz"
+          },
+          {
+            "id": "16_Acknowledgements",
+            "title": "Acknowledgements",
+            "path": "leadership/16_Acknowledgements"
+          },
+          {
+            "id": "17_Icanchangethings",
+            "title": "I can change things!",
+            "path": "leadership/17_Icanchangethings"
+          },
+          {
+            "id": "18_SCEagentsofchange",
+            "title": "SCE agents of change",
+            "path": "leadership/18_SCEagentsofchange"
+          },
+          {
+            "id": "19_Individualstogether",
+            "title": "Individuals together",
+            "path": "leadership/19_Individualstogether"
+          },
+          {
+            "id": "20_Astaandthecommunitygarden",
+            "title": "Asta and the community garden",
+            "path": "leadership/20_Astaandthecommunitygarden"
+          }
+        ],
+        "es": [
+          {
+            "id": "1_Introduccin",
+            "title": "Introducción",
+            "path": "leadership/1_Introduccin"
+          },
+          {
+            "id": "2_Agentesdecambio",
+            "title": "Agentes de cambio",
+            "path": "leadership/2_Agentesdecambio"
+          },
+          {
+            "id": "3_Puedocambiarlascosas",
+            "title": "¡Puedo cambiar las cosas!",
+            "path": "leadership/3_Puedocambiarlascosas"
+          },
+          {
+            "id": "4_Siendounalder",
+            "title": "Siendo una líder",
+            "path": "leadership/4_Siendounalder"
+          },
+          {
+            "id": "5_AgentesdecambiodeSCE",
+            "title": "Agentes de cambio de SCE",
+            "path": "leadership/5_AgentesdecambiodeSCE"
+          },
+          {
+            "id": "6_Elpoderdecuidar",
+            "title": "El poder de cuidar",
+            "path": "leadership/6_Elpoderdecuidar"
+          },
+          {
+            "id": "7_Trabajandojuntas",
+            "title": "Trabajando juntas",
+            "path": "leadership/7_Trabajandojuntas"
+          },
+          {
+            "id": "8_Agradecimientos",
+            "title": "Agradecimientos",
+            "path": "leadership/8_Agradecimientos"
+          },
+          {
+            "id": "9_Grandeslderesfeministas",
+            "title": "Grandes líderes feministas",
+            "path": "leadership/9_Grandeslderesfeministas"
+          },
+          {
+            "id": "10_Liderazgofeminista",
+            "title": "Liderazgo feminista",
+            "path": "leadership/10_Liderazgofeminista"
+          },
+          {
+            "id": "11_Convertirseenlderfeminista",
+            "title": "Convertirse en líder feminista",
+            "path": "leadership/11_Convertirseenlderfeminista"
+          },
+          {
+            "id": "12_Necesitamosaccin",
+            "title": "¡Necesitamos acción!",
+            "path": "leadership/12_Necesitamosaccin"
+          },
+          {
+            "id": "13_Qupuedenhacerlasnias",
+            "title": "\"¿Qué pueden hacer las niñas?\"",
+            "path": "leadership/13_Qupuedenhacerlasnias"
+          },
+          {
+            "id": "14_Buscandojusticiajuntas",
+            "title": "Buscando justicia juntas",
+            "path": "leadership/14_Buscandojusticiajuntas"
+          },
+          {
+            "id": "15_Beneficiosdelamentora",
+            "title": "Beneficios de la mentoría",
+            "path": "leadership/15_Beneficiosdelamentora"
+          },
+          {
+            "id": "16_Qunohacercomomentora",
+            "title": "Qué no hacer como mentora",
+            "path": "leadership/16_Qunohacercomomentora"
+          },
+          {
+            "id": "17_Juliaylaentrenadora",
+            "title": "Julia y la entrenadora",
+            "path": "leadership/17_Juliaylaentrenadora"
+          },
+          {
+            "id": "18_Juliaysuvecina",
+            "title": "Julia y su vecina",
+            "path": "leadership/18_Juliaysuvecina"
+          },
+          {
+            "id": "19_Juliayeljardncomunitario",
+            "title": "Julia y el jardín comunitario",
+            "path": "leadership/19_Juliayeljardncomunitario"
+          },
+          {
+            "id": "20_Pruebadelcurso",
+            "title": "Prueba del curso",
+            "path": "leadership/20_Pruebadelcurso"
+          }
+        ],
+        "fr": [
+          {
+            "id": "1_Agentsdechangement",
+            "title": "Agents de changement",
+            "path": "leadership/1_Agentsdechangement"
+          },
+          {
+            "id": "2_Introduction",
+            "title": "Introduction",
+            "path": "leadership/2_Introduction"
+          },
+          {
+            "id": "3_Jepeuxchangerleschoses",
+            "title": "Je peux changer les choses !",
+            "path": "leadership/3_Jepeuxchangerleschoses"
+          },
+          {
+            "id": "4_treuneleadeuse",
+            "title": "Être une leadeuse",
+            "path": "leadership/4_treuneleadeuse"
+          },
+          {
+            "id": "5_AgentsdechangementSCE",
+            "title": "Agents de changement SCE",
+            "path": "leadership/5_AgentsdechangementSCE"
+          },
+          {
+            "id": "6_Grandesleadeusesfministes",
+            "title": "Grandes leadeuses féministes",
+            "path": "leadership/6_Grandesleadeusesfministes"
+          },
+          {
+            "id": "7_Leadershipfministe",
+            "title": "Leadership féministe",
+            "path": "leadership/7_Leadershipfministe"
+          },
+          {
+            "id": "8_Lepouvoirdelasolidarit",
+            "title": "Le pouvoir de la solidarité",
+            "path": "leadership/8_Lepouvoirdelasolidarit"
+          },
+          {
+            "id": "9_Deveniruneleadeusefministe",
+            "title": "Devenir une leadeuse féministe",
+            "path": "leadership/9_Deveniruneleadeusefministe"
+          },
+          {
+            "id": "10_Ilfautagir",
+            "title": "Il faut agir !",
+            "path": "leadership/10_Ilfautagir"
+          },
+          {
+            "id": "11_S_organiserensemble",
+            "title": "S'organiser ensemble",
+            "path": "leadership/11_S_organiserensemble"
+          },
+          {
+            "id": "12_Quepeuventfairelesfilles",
+            "title": "« Que peuvent faire les filles ? »",
+            "path": "leadership/12_Quepeuventfairelesfilles"
+          },
+          {
+            "id": "13_Rechercherensemblelajustice",
+            "title": "Rechercher ensemble la justice",
+            "path": "leadership/13_Rechercherensemblelajustice"
+          },
+          {
+            "id": "14_Avantagesdumentorat",
+            "title": "Avantages du mentorat",
+            "path": "leadership/14_Avantagesdumentorat"
+          },
+          {
+            "id": "15_Cequilnefautpasfaireentantquementor",
+            "title": "Ce qu’il ne faut pas faire en tant que mentor",
+            "path": "leadership/15_Cequilnefautpasfaireentantquementor"
+          },
+          {
+            "id": "16_Animatouetlentraneuse",
+            "title": "Animatou et l’entraîneuse",
+            "path": "leadership/16_Animatouetlentraneuse"
+          },
+          {
+            "id": "17_Animatouetsavoisine",
+            "title": "Animatou et sa voisine",
+            "path": "leadership/17_Animatouetsavoisine"
+          },
+          {
+            "id": "18_Animatouetlejardincommunautaire",
+            "title": "Animatou et le jardin communautaire",
+            "path": "leadership/18_Animatouetlejardincommunautaire"
+          },
+          {
+            "id": "19_Quizdecours",
+            "title": "Quiz de cours",
+            "path": "leadership/19_Quizdecours"
+          },
+          {
+            "id": "20_Remerciements",
+            "title": "Remerciements",
+            "path": "leadership/20_Remerciements"
+          }
+        ],
+        "ar": [
+          {
+            "id": "1_",
+            "title": "ماذا يمكن للفتيات أن يفعلن؟",
+            "path": "leadership/1_"
+          },
+          {
+            "id": "2_",
+            "title": "مقدمة",
+            "path": "leadership/2_"
+          },
+          {
+            "id": "3_",
+            "title": "وكلاء التغيير",
+            "path": "leadership/3_"
+          },
+          {
+            "id": "4_",
+            "title": "أستطيع تغيير الأشياء!",
+            "path": "leadership/4_"
+          },
+          {
+            "id": "5_",
+            "title": "أن تكوني قائدةً",
+            "path": "leadership/5_"
+          },
+          {
+            "id": "6_",
+            "title": "قيادات نسوية عظيمة",
+            "path": "leadership/6_"
+          },
+          {
+            "id": "7_",
+            "title": "القيادة النسوية",
+            "path": "leadership/7_"
+          },
+          {
+            "id": "8_",
+            "title": "قوة الاهتمام",
+            "path": "leadership/8_"
+          },
+          {
+            "id": "9_",
+            "title": "نحتاج إلى اتخاذ إجراء!",
+            "path": "leadership/9_"
+          },
+          {
+            "id": "10_",
+            "title": "الأفراد معًا",
+            "path": "leadership/10_"
+          },
+          {
+            "id": "11_",
+            "title": "نسعى لتحقيق العدالة معا",
+            "path": "leadership/11_"
+          },
+          {
+            "id": "12_",
+            "title": "فوائد الإرشاد",
+            "path": "leadership/12_"
+          },
+          {
+            "id": "13_",
+            "title": "أسما والمدربة",
+            "path": "leadership/13_"
+          },
+          {
+            "id": "14_",
+            "title": "أسما وجارتها",
+            "path": "leadership/14_"
+          },
+          {
+            "id": "15_",
+            "title": "اختبار",
+            "path": "leadership/15_"
+          },
+          {
+            "id": "16_",
+            "title": "شكر وتقدير",
+            "path": "leadership/16_"
+          },
+          {
+            "id": "17_",
+            "title": "وكلاء التغيير في فرصة ثانية للتعليم",
+            "path": "leadership/17_"
+          },
+          {
+            "id": "18_",
+            "title": "أن تصبحي قائدة نسوية",
+            "path": "leadership/18_"
+          },
+          {
+            "id": "19_",
+            "title": "ما لا يجب فعله كمرشدة",
+            "path": "leadership/19_"
+          },
+          {
+            "id": "20_",
+            "title": "أسما وحديقة المجتمع",
+            "path": "leadership/20_"
+          }
+        ]
+      }
     }
   ]
 }
