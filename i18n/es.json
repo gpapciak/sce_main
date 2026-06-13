@@ -1,6 +1,6 @@
 {
   "a11y.skip": "Saltar al contenido",
-  "brand.home": "Second Chance — inicio",
+  "brand.home": "Segunda Oportunidad — inicio",
 
   "nav.label": "Principal",
   "nav.courses": "Cursos",
@@ -36,7 +36,7 @@
 
   "privacy.line": "Esto es anónimo. No te pedimos tu nombre ni tu correo electrónico, y nada aquí te identifica. Solo contamos cuántas personas completan los cursos, por país, para mejorar el programa. Tu progreso se guarda en este dispositivo.",
 
-  "index.title": "Second Chance — Cursos fundamentales",
+  "index.title": "Segunda Oportunidad — Cursos fundamentales",
   "index.eyebrow": "Bienvenida",
   "index.heading": "Nunca es tarde para aprender.",
   "index.lead": "Puede que no hayas tenido la oportunidad de educación que merecías, pero esa oportunidad no ha desaparecido. Estos breves cursos fundamentales son una forma de aumentar tu confianza, descubrir tus fortalezas y aprender cosas que puedes usar en tu propia vida, a tu propio ritmo, en tu propio teléfono, dondequiera que estés.",
@@ -85,7 +85,7 @@
   "launch.placeholder": "Tu módulo se abrirá aquí.",
   "launch.note": "Mantén esta página abierta mientras avanzas por el módulo. Se marca como completado automáticamente cuando terminas.",
   "launch.shared.title": "¿Compartes este dispositivo?",
-  "launch.shared.body": "Si compartes este dispositivo con otra persona que también esté haciendo los cursos de Second Chance, hazlo solo si cada una puede terminar un curso de una sola vez. El dispositivo guarda tu progreso, pero no puede distinguir entre dos personas: si paras a la mitad y otra persona empieza, tu progreso guardado puede mezclarse o perderse.",
+  "launch.shared.body": "Si compartes este dispositivo con otra persona que también esté haciendo los cursos de Segunda Oportunidad, hazlo solo si cada una puede terminar un curso de una sola vez. El dispositivo guarda tu progreso, pero no puede distinguir entre dos personas: si paras a la mitad y otra persona empieza, tu progreso guardado puede mezclarse o perderse.",
   "launch.stub.note": "El reproductor del curso llegará en el próximo paso. Por ahora es un marcador de posición.",
   "launch.loading": "Cargando el módulo…",
   "launch.started": "Módulo iniciado. Avanza por él y termínalo para completarlo.",
@@ -129,7 +129,7 @@
   "intake.brings.work": "Encontrar trabajo",
   "intake.brings.education": "Volver a la educación formal",
   "intake.q.found": "¿Cómo encontraste estos cursos?",
-  "intake.found.hub": "A través de un centro o facilitador de Second Chance",
+  "intake.found.hub": "A través de un centro o facilitador de Segunda Oportunidad",
   "intake.found.friend": "Por una amiga o un familiar",
   "intake.found.online": "Lo encontré en internet",
   "intake.found.other": "Otro",
@@ -162,7 +162,7 @@
   "complete.cert.awarded": "Otorgado a",
   "complete.cert.namePlaceholder": "Tu nombre",
   "complete.cert.completed": "por completar",
-  "complete.cert.programme": "Second Chance — Cursos fundamentales",
+  "complete.cert.programme": "Segunda Oportunidad — Cursos fundamentales",
   "complete.notComplete.title": "Ya casi",
   "complete.notComplete.body": "Termina todos los módulos de este curso para desbloquear tu certificado.",
   "complete.notComplete.cta": "Volver al curso",
@@ -188,7 +188,7 @@
   "tips.oneSitting.title": "Termina un curso de una sola vez cuando puedas",
   "tips.oneSitting.body": "Estos cursos funcionan mejor si completas un curso entero de una sola vez, cuando puedas. Cada módulo dura unos 30 minutos, y los módulos se apoyan unos en otros: hacerlos juntos mantiene tu impulso y ayuda a que las ideas se afiancen. Tu progreso se guarda en el dispositivo que estás usando, pero terminar de una vez es la forma más segura de no perder tu lugar: si cambias de teléfono, borras tu navegador o vuelves después de mucho tiempo, a veces se puede perder el punto guardado. Si no puedes terminar un curso entero de una vez, no pasa nada; solo intenta terminar cada módulo que empieces antes de parar.",
   "tips.shared.title": "Compartir un dispositivo",
-  "tips.shared.body": "Si compartes este dispositivo con otra persona que también esté haciendo los cursos de Second Chance, hazlo solo si cada una puede terminar un curso de una sola vez. El dispositivo guarda tu progreso, pero no puede distinguir entre dos personas: si paras a la mitad y otra persona empieza, tu progreso guardado puede mezclarse o perderse.",
+  "tips.shared.body": "Si compartes este dispositivo con otra persona que también esté haciendo los cursos de Segunda Oportunidad, hazlo solo si cada una puede terminar un curso de una sola vez. El dispositivo guarda tu progreso, pero no puede distinguir entre dos personas: si paras a la mitad y otra persona empieza, tu progreso guardado puede mezclarse o perderse.",
   "tips.phone.title": "Hecho para tu teléfono",
   "tips.phone.body": "Todo está diseñado para funcionar bien en un teléfono. Puedes sostenerlo en vertical y leer cómodamente; los botones son grandes y fáciles de tocar.",
   "tips.data.title": "Una nota sobre los datos",
