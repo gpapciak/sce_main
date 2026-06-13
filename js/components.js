@@ -25,8 +25,8 @@
             '<img src="' + logo + '" alt="Second Chance" width="168" height="59">' +
           '</a>' +
           '<nav class="header-nav" data-i18n-attr="aria-label:nav.label">' +
-            '<a class="nav-link" href="' + url("courses.html") + '" data-i18n="nav.courses">Courses</a>' +
-            '<a class="nav-link" href="' + url("help/how-to.html") + '" data-i18n="nav.howto">How it works</a>' +
+            // Full menu lives in the always-available drawer (consistent on every
+            // page + viewport). Header keeps only home(logo), language, and menu.
             '<button type="button" class="lang-chip" id="langChipBtn" data-i18n-attr="aria-label:nav.language">' +
               globeSVG() +
               '<span id="langChipLabel">English</span>' +
@@ -62,9 +62,13 @@
             '<span class="wordmark">Second Chance</span> ' +
             '<span data-i18n="footer.tagline">Foundational courses</span>' +
           '</div>' +
+          // Footer carries the full core set as a no-JS fallback (reachable on
+          // every page/viewport even if the drawer script doesn't run).
           '<nav data-i18n-attr="aria-label:footer.label">' +
+            '<a href="' + url("courses.html") + '" data-i18n="nav.courses">Courses</a>' +
             '<a href="' + url("help/why.html") + '" data-i18n="nav.why">Why these courses</a>' +
             '<a href="' + url("help/how-to.html") + '" data-i18n="nav.howto">How it works</a>' +
+            '<a href="' + url("help/tips.html") + '" data-i18n="nav.tips">Tips</a>' +
             '<a href="' + url("help/faq.html") + '" data-i18n="nav.faq">FAQ</a>' +
             '<a href="' + url("help/contact.html") + '" data-i18n="nav.contact">Contact</a>' +
           '</nav>' +

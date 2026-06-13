@@ -319,9 +319,11 @@ p { margin: 0; }
 .lang-chip:hover { border-color: var(--color-blue); background: var(--color-blue-50); }
 .lang-chip .globe { flex-shrink: 0; }
 
-/* Mobile menu toggle (kept minimal — chrome is light by design) */
+/* Menu toggle (hamburger). Shown on ALL viewports so the full menu drawer is
+   reachable from every page consistently (not just on phones). Chrome stays
+   light: header = logo + language + menu. */
 .menu-toggle {
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 44px; height: 44px;
@@ -330,11 +332,6 @@ p { margin: 0; }
   background: var(--color-surface);
   color: var(--color-blue);
   cursor: pointer;
-}
-
-@media (max-width: 560px) {
-  .header-nav .nav-link { display: none; }     /* keep header uncluttered on phones */
-  .menu-toggle { display: inline-flex; }
 }
 
 /* Collapsible menu drawer (phones) */
