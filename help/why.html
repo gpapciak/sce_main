@@ -22,6 +22,34 @@
       line-height: var(--leading-body);
     }
     .why-course__name { color: var(--color-blue); }
+
+    /* --- Lead emphasis. Restrained, meaningful. Brand BLUE only (no red here —
+       keep this passage calm). Hierarchy, loudest → quietest:
+       .why-pull  >  .why-pivot  >  .why-emph  >  plain.
+       The barrier list and everything else stay plain on purpose. --- */
+
+    /* #3 pull-line: the loudest moment — larger, brand blue, its own breathing room. */
+    .why-pull {
+      display: block;
+      max-width: 28rem;
+      margin-block: var(--space-7);
+      color: var(--color-blue);
+      font-size: clamp(1.3rem, 1.05rem + 1.4vw, 1.7rem);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+
+    /* #4 forward pivot: light inline emphasis — lighter than the pull-line. */
+    .why-pivot { font-weight: 600; }
+
+    /* #2 structural turn: quiet, texture-level italic (Latin scripts). */
+    .why-emph { font-style: italic; }
+
+    /* Arabic has no true italic — never fake a slant. Express the same (quietest)
+       tier with a gentle medium weight, kept below .why-pivot so the hierarchy
+       holds. (.why-pull and .why-pivot are the durable cross-language emphasis.) */
+    :root[lang="ar"] .why-emph { font-style: normal; font-weight: 500; }
   </style>
 </head>
 <body>
@@ -38,8 +66,13 @@
       <div class="why-col stack-lg">
         <section class="stack-sm">
           <h2 data-i18n="why.lead.heading">A second chance to learn</h2>
-          <p data-i18n="why.lead.p1"></p>
-          <p data-i18n="why.lead.p2"></p>
+          <!-- p1 ends with quiet italic emphasis (.why-emph) on the structural turn -->
+          <p data-i18n-html="why.lead.p1"></p>
+          <!-- pull-line: "the door was closed to you, not by you" set apart as its own moment -->
+          <p data-i18n="why.lead.p2a"></p>
+          <p class="why-pull" data-i18n="why.lead.pull"></p>
+          <!-- p2b carries the lighter inline pivot (.why-pivot) -->
+          <p data-i18n-html="why.lead.p2b"></p>
         </section>
 
         <section class="stack-sm">
