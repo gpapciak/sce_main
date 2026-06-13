@@ -34,9 +34,9 @@
   var LANGS = [
     { code: "en", native: "English",  dir: "ltr", live: true  },
     { code: "es", native: "Español",  dir: "ltr", live: true, draft: true },
-    { code: "fr", native: "Français", dir: "ltr", live: false },
-    { code: "hi", native: "हिन्दी",     dir: "ltr", live: true  },
-    { code: "ar", native: "العربية",   dir: "rtl", live: false }
+    { code: "fr", native: "Français", dir: "ltr", live: true, draft: true },
+    { code: "hi", native: "हिन्दी",     dir: "ltr", live: true, draft: true },
+    { code: "ar", native: "العربية",   dir: "rtl", live: true, draft: true }
   ];
   var LANG_KEY = "sce_lang";
   var DEFAULT = "en";
