@@ -81,6 +81,19 @@
       '</header>';
   }
 
+  // Draft-translation banner — shown only when the chosen interface language is
+  // flagged draft:true in i18n.js (Spanish now; same mechanism for fr/ar later).
+  // Remove the banner everywhere by dropping that one flag once review is done.
+  function draftBannerHTML() {
+    if (!window.SCE_I18N) return "";
+    var meta = window.SCE_I18N.meta(window.SCE_I18N.chosenLang());
+    if (!meta || !meta.draft) return "";
+    return '<div class="draft-banner" role="note">' +
+             '<span class="draft-banner__dot" aria-hidden="true"></span>' +
+             '<span data-i18n="draft.notice">' + window.SCE_I18N.t("draft.notice") + '</span>' +
+           '</div>';
+  }
+
   function footerHTML() {
     var year = document.documentElement.getAttribute("data-year") || "";
     return '' +
@@ -178,7 +191,7 @@
 
   function inject() {
     document.querySelectorAll('[data-include="header"]').forEach(function (slot) {
-      slot.outerHTML = headerHTML() + langDialogHTML();
+      slot.outerHTML = headerHTML() + draftBannerHTML() + langDialogHTML();
     });
     document.querySelectorAll('[data-include="footer"]').forEach(function (slot) {
       slot.outerHTML = footerHTML();

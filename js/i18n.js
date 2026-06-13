@@ -28,9 +28,12 @@
   //         then it falls back to English per-key.
   //   es/fr/ar — "coming soon" until both their interface strings AND their
   //         course media (sce_courses_xx1/xx2) are placed.
+  //   draft:true → show a "preliminary translation" banner (per-language; the
+  //     single mechanism serves fr/ar later — flip on when their first-pass
+  //     translation ships, remove once a native speaker signs it off).
   var LANGS = [
     { code: "en", native: "English",  dir: "ltr", live: true  },
-    { code: "es", native: "Español",  dir: "ltr", live: false },
+    { code: "es", native: "Español",  dir: "ltr", live: true, draft: true },
     { code: "fr", native: "Français", dir: "ltr", live: false },
     { code: "hi", native: "हिन्दी",     dir: "ltr", live: true  },
     { code: "ar", native: "العربية",   dir: "rtl", live: false }
