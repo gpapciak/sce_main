@@ -41,6 +41,7 @@
           '<div class="container">' +
             '<ul>' +
               '<li><a href="' + url("courses.html") + '" data-i18n="nav.courses">Courses</a></li>' +
+              '<li><a href="' + url("help/why.html") + '" data-i18n="nav.why">Why these courses</a></li>' +
               '<li><a href="' + url("help/how-to.html") + '" data-i18n="nav.howto">How it works</a></li>' +
               '<li><a href="' + url("help/tips.html") + '" data-i18n="nav.tips">Tips</a></li>' +
               '<li><a href="' + url("help/faq.html") + '" data-i18n="nav.faq">FAQ</a></li>' +
@@ -62,6 +63,7 @@
             '<span data-i18n="footer.tagline">Foundational courses</span>' +
           '</div>' +
           '<nav data-i18n-attr="aria-label:footer.label">' +
+            '<a href="' + url("help/why.html") + '" data-i18n="nav.why">Why these courses</a>' +
             '<a href="' + url("help/how-to.html") + '" data-i18n="nav.howto">How it works</a>' +
             '<a href="' + url("help/faq.html") + '" data-i18n="nav.faq">FAQ</a>' +
             '<a href="' + url("help/contact.html") + '" data-i18n="nav.contact">Contact</a>' +
