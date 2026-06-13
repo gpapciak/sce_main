@@ -319,9 +319,11 @@ p { margin: 0; }
 .lang-chip:hover { border-color: var(--color-blue); background: var(--color-blue-50); }
 .lang-chip .globe { flex-shrink: 0; }
 
-/* Menu toggle (hamburger). Shown on ALL viewports so the full menu drawer is
-   reachable from every page consistently (not just on phones). Chrome stays
-   light: header = logo + language + menu. */
+/* Conventional responsive split (both layouts render from the SAME source list
+   in components.js, so they can't drift):
+   - mobile (< 820px): hamburger toggle visible, inline links hidden;
+   - desktop (>= 820px): full inline CORE links visible, hamburger hidden.
+   The complete core set is present in both — neither is a subset. */
 .menu-toggle {
   display: inline-flex;
   align-items: center;
@@ -332,6 +334,12 @@ p { margin: 0; }
   background: var(--color-surface);
   color: var(--color-blue);
   cursor: pointer;
+}
+.header-nav .nav-link { display: none; }       /* hidden on mobile (use drawer) */
+
+@media (min-width: 820px) {
+  .header-nav .nav-link { display: inline-flex; }   /* full core set inline */
+  .menu-toggle { display: none; }                   /* hamburger is mobile-only */
 }
 
 /* Collapsible menu drawer (phones) */

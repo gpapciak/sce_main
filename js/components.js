@@ -15,6 +15,41 @@
     return window.SCE_I18N ? window.SCE_I18N.url(rel) : rel;
   }
 
+  /* ---- Single source of truth for navigation destinations ----------------
+     Both the desktop inline header nav AND the mobile drawer AND the footer
+     render from these same lists, so they can NEVER drift out of sync (the
+     orphaning bug came from a desktop header that showed only a subset).
+     CORE = the complete primary set, shown in ALL three places.
+     EXTRA = secondary (intake); shown in the drawer + footer (so it's still
+     reachable on every viewport) but kept out of the inline desktop bar. */
+  var NAV_CORE = [
+    { href: "courses.html",      key: "nav.courses", label: "Courses" },
+    { href: "help/why.html",     key: "nav.why",     label: "Why these courses" },
+    { href: "help/how-to.html",  key: "nav.howto",   label: "How it works" },
+    { href: "help/tips.html",    key: "nav.tips",    label: "Tips" },
+    { href: "help/faq.html",     key: "nav.faq",     label: "FAQ" },
+    { href: "help/contact.html", key: "nav.contact", label: "Contact" }
+  ];
+  var NAV_EXTRA = [
+    { href: "intake.html", key: "nav.intake", label: "Quick questions" }
+  ];
+
+  function renderInline(items) {
+    return items.map(function (l) {
+      return '<a class="nav-link" href="' + url(l.href) + '" data-i18n="' + l.key + '">' + l.label + '</a>';
+    }).join("");
+  }
+  function renderDrawer(items) {
+    return items.map(function (l) {
+      return '<li><a href="' + url(l.href) + '" data-i18n="' + l.key + '">' + l.label + '</a></li>';
+    }).join("");
+  }
+  function renderFooter(items) {
+    return items.map(function (l) {
+      return '<a href="' + url(l.href) + '" data-i18n="' + l.key + '">' + l.label + '</a>';
+    }).join("");
+  }
+
   function headerHTML() {
     var logo = url("assets/logo/SCE_logo_transparent_true.png");
     return '' +
@@ -25,12 +60,13 @@
             '<img src="' + logo + '" alt="Second Chance" width="168" height="59">' +
           '</a>' +
           '<nav class="header-nav" data-i18n-attr="aria-label:nav.label">' +
-            // Full menu lives in the always-available drawer (consistent on every
-            // page + viewport). Header keeps only home(logo), language, and menu.
+            // Desktop: full CORE set inline (shown >= 820px via CSS).
+            renderInline(NAV_CORE) +
             '<button type="button" class="lang-chip" id="langChipBtn" data-i18n-attr="aria-label:nav.language">' +
               globeSVG() +
               '<span id="langChipLabel">English</span>' +
             '</button>' +
+            // Mobile: hamburger (shown < 820px via CSS) opens the drawer below.
             '<button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" ' +
               'aria-controls="menuDrawer" data-i18n-attr="aria-label:nav.menu">' +
               menuSVG() +
@@ -39,15 +75,7 @@
         '</div>' +
         '<div class="menu-drawer" id="menuDrawer">' +
           '<div class="container">' +
-            '<ul>' +
-              '<li><a href="' + url("courses.html") + '" data-i18n="nav.courses">Courses</a></li>' +
-              '<li><a href="' + url("help/why.html") + '" data-i18n="nav.why">Why these courses</a></li>' +
-              '<li><a href="' + url("help/how-to.html") + '" data-i18n="nav.howto">How it works</a></li>' +
-              '<li><a href="' + url("help/tips.html") + '" data-i18n="nav.tips">Tips</a></li>' +
-              '<li><a href="' + url("help/faq.html") + '" data-i18n="nav.faq">FAQ</a></li>' +
-              '<li><a href="' + url("help/contact.html") + '" data-i18n="nav.contact">Contact</a></li>' +
-              '<li><a href="' + url("intake.html") + '" data-i18n="nav.intake">Quick questions</a></li>' +
-            '</ul>' +
+            '<ul>' + renderDrawer(NAV_CORE.concat(NAV_EXTRA)) + '</ul>' +
           '</div>' +
         '</div>' +
       '</header>';
@@ -62,15 +90,11 @@
             '<span class="wordmark">Second Chance</span> ' +
             '<span data-i18n="footer.tagline">Foundational courses</span>' +
           '</div>' +
-          // Footer carries the full core set as a no-JS fallback (reachable on
-          // every page/viewport even if the drawer script doesn't run).
+          // Footer carries the full CORE set (+ intake) as a no-JS fallback,
+          // reachable on every page/viewport — incl. desktop, where intake is
+          // not in the inline bar. Same source lists as header/drawer.
           '<nav data-i18n-attr="aria-label:footer.label">' +
-            '<a href="' + url("courses.html") + '" data-i18n="nav.courses">Courses</a>' +
-            '<a href="' + url("help/why.html") + '" data-i18n="nav.why">Why these courses</a>' +
-            '<a href="' + url("help/how-to.html") + '" data-i18n="nav.howto">How it works</a>' +
-            '<a href="' + url("help/tips.html") + '" data-i18n="nav.tips">Tips</a>' +
-            '<a href="' + url("help/faq.html") + '" data-i18n="nav.faq">FAQ</a>' +
-            '<a href="' + url("help/contact.html") + '" data-i18n="nav.contact">Contact</a>' +
+            renderFooter(NAV_CORE.concat(NAV_EXTRA)) +
           '</nav>' +
         '</div>' +
         '<div class="container">' +
